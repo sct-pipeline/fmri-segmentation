@@ -1,0 +1,16 @@
+{
+	"TaskName": "rest",
+	"TaskDescription": "Resting-state acquisitions, eyes open.",
+	"MagneticFieldStrength": 3,
+	"Manufacturer": "Siemens",
+	"ManufacturersModelName": "Prisma",
+	"SliceThickness": 5,
+	"EchoTime": 0.04,
+	"RepetitionTime": 2.312,
+	"FlipAngle": 84,
+	"PartialFourier": 0.875,
+	"Matrix":  "128 x 128",
+	"ReceiveCoilName": " 64-channel RF head-and-neck coil, 32-channel RF spine-array",
+	"ReceiveCoilActiveElements": "HC5-7;NC1,2;SP1",
+	"Bandwidth":  " 1220 Hz/Pixel"
+}
