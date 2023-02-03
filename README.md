@@ -3,7 +3,7 @@ Repository for the project on automatic spinal cord segmentation based on fMRI E
 
 ## Aim
 To develop a method to automate the time-consuming segmentation
-of the spinal cord for fMRI and then make the method openly available to the spinal cord fMRI community. The model will be incorporated into the [Spinal Cord Toolbox](https://spinalcordtoolbox.com/). The data will be used only for the purpose of segmenting the spinal cord.
+of the spinal cord for fMRI and then make the method openly available to the spinal cord fMRI community. The model will be incorporated into the [Spinal Cord Toolbox](https://spinalcordtoolbox.com/). The data will be used only for the purpose of segmenting the spinal cord. Co-authorship on any abstracts or publications will be offered to anyone who contributes data to the project.
 
 ## What to share?
 GitHub repository that contains the example data: https://github.com/sct-pipeline/fmri-segmentation/tree/main/data_leipzig_rest
