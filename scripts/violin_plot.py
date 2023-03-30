@@ -1,5 +1,5 @@
 '''
-Write a script to get a specific column from three csv files and generate a violin plot using it
+Script to get a specific column from three csv files and generate a violin plot using it
 Usage:
 1. Change the file_name variable with the csv file that has the test dice scores
 2. Run the script using: python violin_plot.py
