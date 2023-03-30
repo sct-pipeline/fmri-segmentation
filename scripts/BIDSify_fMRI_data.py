@@ -1,3 +1,48 @@
+'''
+This script converts data from fMRI BIDS format (received from different sites) to ivadomed compatible BIDS format
+The fMRI BIDS format looks like the following:
+
+data_{site_name}_{task}
+├── derivatives
+│   ├── labels
+│   │   ├── sub-01
+│   │   │   ├── func
+│   │   │   │   ├── sub-{number}_{task_name}-spinalcord_mask.nii.gz
+│   ├── moco
+│   │   ├── sub-01
+│   │   │   ├── func
+│   │   │   │   ├── sub-{number}_{task_name}-mocomean_bold.nii.gz
+
+The ivadomed compatible BIDS format looks like the following:
+
+data_{site_name}_{task}_BIDS
+├── derivatives
+│   ├── labels
+│   │   ├── sub-{number}
+│   │   │   ├── func
+│   │   │   │   ├── sub-{number}_{name}_seg-manual.nii.gz
+│   │   │   │   ├── sub-{number}_{name}_seg-manual.json
+
+├── sub-01
+│   ├── func
+│   │   ├── sub-{number}_{name}_bold.nii.gz
+│   │   ├── sub-{number}_{name}_bold.json
+├── dataset_description.json
+├── participants.tsv
+├── participants.json
+├── README
+
+
+Usage:
+1. Change the input_path, label_path and output_path to the appropriate paths
+2. Run the script by typing the following command in the terminal:
+python BIDSify_fMRI_data.py
+
+Author: Rohan Banerjee
+
+'''
+
+
 import os
 import shutil
 import json
