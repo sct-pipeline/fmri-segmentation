@@ -1,4 +1,11 @@
-# write a script to get a spefic column from three csv files and generate a violoin plot using it
+'''
+Write a script to get a specific column from three csv files and generate a violin plot using it
+Usage:
+1. Change the file_name variable with the csv file that has the test dice scores
+2. Run the script using: python violin_plot.py
+'''
+
+
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -8,12 +15,13 @@ import pandas as pd
 def get_column(filename, column):
     with open(filename, 'r') as f:
         return [line.split(',')[column] for line in f.readlines()]
+file_name = "evaluation_3Dmetrics.csv"
 
 # import sys
 # if len(sys.argv) != 1:
 #     print('Usage: {} file1'.format(sys.argv[0]))
 #     sys.exit(1)
-data1 = get_column('evaluation_3Dmetrics.csv', 5)
+data1 = get_column(file_name, 5)
 print(data1)
 # data2 = get_column('/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/results/20230227_2d_geneva_rest_with_weights/results_eval/evaluation_3Dmetrics.csv', 5)
 # data3 = get_column(sys.argv[3], 5)
