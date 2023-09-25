@@ -51,6 +51,8 @@ import csv
 
 main_path = os.getcwd()
 
+
+
 # input path is the path where the motion corrected image files are stored
 input_path = "/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/data_geneva_rest/data_geneva_rest3/derivatives/moco"
 # label path is the path where the spinal cord label files/ground truth are stored
@@ -59,7 +61,18 @@ label_path = "/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/data_ge
 output_path = "/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/data_geneva_rest3_bids"
 
 
+parser = argparse.ArgumentParser(description='Convert motion-corrected images and labels to BIDS format.')
+parser.add_argument('input_path', type=str, help='Path to motion corrected image files')
+parser.add_argument('label_path', type=str, help='Path to spinal cord label files/ground truth')
+parser.add_argument('output_path', type=str, help='Path to store BIDSified data')
+args = parser.parse_args()
 
+main_path = os.getcwd()
+
+# Set input_path, label_path, and output_path from argparse arguments
+input_path = args.input_path
+label_path = args.label_path
+output_path = args.output_path
 
 if os.path.exists(output_path):
     shutil.rmtree(output_path)
