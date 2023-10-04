@@ -3,17 +3,13 @@
 #     
 # Functionality: Generates qc reports for already existing images and their corresponding segmentations/labels     
 # Usage:
-#   sct_run_batch -script qc_generation.sh
+#   sct_run_batch -script qc_generation.sh --path-data PATH_TO_BIDS_DATA --path-output PATH_TO_QC_OUTPUT
 # Output: The index.html in the qc folder will have the qc reports for all the subjects in the data.
 #
 # Authors: Rohan Banerjee
 
 # The following global variables are retrieved from the caller sct_run_batch
 # but could be overwritten by uncommenting the lines below:
-PATH_DATA_PROCESSED="/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/datasets/data_Zurich_Lumbar_Rest_bids"
-PATH_RESULTS="/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/datasets/data_Zurich_Lumbar_Rest_bids/code/results"
-PATH_LOG="/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/datasets/data_Zurich_Lumbar_Rest_bids/code/log"
-PATH_QC="/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/datasets/data_Zurich_Lumbar_Rest_bids/code/qc"
 
 # Uncomment for full verbose
 set -x
@@ -51,6 +47,6 @@ file_bold_seg=${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_task-re
 
 echo "file_bold: ${file_bold}"
 
-sct_qc -i ${file_bold} -s ${file_bold_seg} -qc qc -qc-subject ${SUBJECT}
+sct_qc -i ${file_bold} -s ${file_bold_seg} -qc ${PATH_DATA}/qc_SITE_NAME -p sct_deepseg_sc
 
 
