@@ -128,5 +128,9 @@ sub-nwP10
 ## How to share?
 Once you organize your data as described above you could send it to Merve Kaptan (mkaptan@stanford.edu) via any cloud-based method (Gdrive, Dropbox, etc.).
 
+## Contribute
+
+[Project management](https://github.com/orgs/sct-pipeline/projects/1)
+
 ## Ethics and anonymization
 We intend to make the dataset publicly available on https://openneuro.org/ for replication and reproduction. It is responsibility of each site to ensure that each subject consented to be scanned and to have their anonymized data put in a publicly-available repository.
