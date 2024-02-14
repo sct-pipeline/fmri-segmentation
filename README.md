@@ -1,6 +1,9 @@
 # fmri-segmentation
 Repository for the project on automatic spinal cord segmentation based on fMRI EPI data
 
+#### [Internal] Link to dataset: https://drive.google.com/drive/folders/14rxPz_mWV1AOSULBFFU7A5IT9zX5PvcI?usp=sharing
+
+
 ## Aim
 To develop a method to automate the time-consuming segmentation
 of the spinal cord for fMRI and then make the method openly available to the spinal cord fMRI community. The model will be incorporated into the [Spinal Cord Toolbox](https://spinalcordtoolbox.com/). The data will be used only for the purpose of segmenting the spinal cord. Co-authorship on any abstracts or publications will be offered to anyone who contributes data to the project.
