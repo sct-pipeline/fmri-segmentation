@@ -143,5 +143,34 @@ We intend to make the dataset publicly available on https://openneuro.org/ for r
 
 #### [Internal] Link to dataset and segmentation model weights: https://drive.google.com/drive/folders/14rxPz_mWV1AOSULBFFU7A5IT9zX5PvcI?usp=sharing
 
+## Getting started
 
+- [Spinal Cord Toolbox (SCT)](https://spinalcordtoolbox.com/user_section/installation.html)
+- [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) 
+- Python
+- [nnUNetv2](https://github.com/MIC-DKFZ/nnUNet)
 
+### Step 1: Cloning the Repository
+
+Open a terminal and clone the repository using the following command:
+
+~~~
+git clone https://github.com/sct-pipeline/fmri-segmentation.git
+~~~
+
+### Step 2: Setting up the Environment
+
+The following commands show how to set up the environment. 
+Note that the documentation assumes that the user has `conda` installed on their system. 
+Instructions on installing `conda` can be found [here](https://conda.io/projects/conda/en/latest/user-guide/install/index.html).
+
+1. Create a conda environment with the following command:
+```
+conda create -n fmri_seg python=3.9
+
+```
+
+2. Activate the environment with the following command:
+```
+conda activate fmri_seg
+```
