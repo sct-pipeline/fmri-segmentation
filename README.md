@@ -159,7 +159,7 @@ git clone https://github.com/sct-pipeline/fmri-segmentation.git
 cd fmri-segmentation
 ~~~
 
-### Step 2: Setting up the Environment
+### Step 2: Setting up the Environment & Analysis
 
 The following commands show how to set up the environment. 
 Note that the documentation assumes that the user has `conda` installed on their system. 
