@@ -198,6 +198,14 @@ python convert_bids_to_nnUNetV2.py --path-data <PATH_TO_DOWNLOADED_BIDS_DATASET>
 nnUNetv2_plan_and_preprocess -d <DATASET_ID> --verify_dataset_integrity
 CUDA_VISIBLE_DEVICES=<GPU_ID> nnUNetv2_train <DATASET_ID> 3d_fullres <FOLD_NUMBER>
 ```
+7. For inference:
+- [TEMPORARY] Download the cuurent best model weights from [here](https://drive.google.com/drive/folders/1AF2Q_8OQ63mK1biir59QYAiTG4wCHen4?usp=share_link) (will be released as assets later)
+```
+[NOTE] A BIDS dataset is NOT required for inference. A folder containing the images is good enough to run the inference
+python scripts/run_nnunet_inference.py --path-dataset <PATH_TO_DATASET> --path-out <PATH_TO_OUTPUT_FOLDER> --path-model <PARENT_FOLDER_CONTAINING_ALL_FOLDS>
+
+```
+
 
 
 
