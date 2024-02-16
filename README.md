@@ -1,8 +1,9 @@
 # fmri-segmentation
 Repository for the project on automatic spinal cord segmentation based on fMRI EPI data
 
-#### [Internal] Link to dataset: https://drive.google.com/drive/folders/14rxPz_mWV1AOSULBFFU7A5IT9zX5PvcI?usp=sharing
-
+<details open>
+<summary>To share data for the project, please expand this text!</summary>
+<br>
 
 ## Aim
 To develop a method to automate the time-consuming segmentation
@@ -137,3 +138,10 @@ Once you organize your data as described above you could send it to Merve Kaptan
 
 ## Ethics and anonymization
 We intend to make the dataset publicly available on https://openneuro.org/ for replication and reproduction. It is responsibility of each site to ensure that each subject consented to be scanned and to have their anonymized data put in a publicly-available repository.
+
+</details>
+
+#### [Internal] Link to dataset and segmentation model weights: https://drive.google.com/drive/folders/14rxPz_mWV1AOSULBFFU7A5IT9zX5PvcI?usp=sharing
+
+
+
