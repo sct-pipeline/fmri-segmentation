@@ -98,6 +98,7 @@ def convert_subject(root, subject, channel, contrast, label_suffix, data_type, p
         subject_label_directory = os.path.join(root, 'derivatives', 'labels', subject, data_type)
         all_label_files = os.listdir(subject_label_directory)
         subject_label_file = os.path.join(subject_label_directory, [f for f in all_label_files if f.endswith('nii.gz')][0])
+        print(subject_label_file)
         sub_name = re.match(r'^([^_]+)', Path(subject_image_file).name).group(1)
 
     else:
@@ -219,9 +220,9 @@ def main():
                 train_ctr = len(train_images)
                 for contrast in contrast_list:
                     train_images, train_labels = convert_subject(root, subject, channel_dict[contrast], contrast,
-                                                                 label_suffix, data_type, path_out_imagesTr, path_out_labelsTr,
-                                                                 train_ctr + test_ctr, train_images, train_labels,
-                                                                 False, copy, DS_name)
+                                                                    label_suffix, data_type, path_out_imagesTr, path_out_labelsTr,
+                                                                    train_ctr + test_ctr, train_images, train_labels,
+                                                                    False, copy, DS_name)
 
         # Test subjects
         elif subject in test_subjects:
@@ -241,14 +242,14 @@ def main():
                                                                    copy, DS_name, session)
 
 
-            # No session folder(s) exist
+            # # No session folder(s) exist
             else:
                 test_ctr = len(test_images)
                 for contrast in contrast_list:
                     test_images, test_labels = convert_subject(root, subject, channel_dict[contrast], contrast,
-                                                                 label_suffix, data_type, path_out_imagesTs, path_out_labelsTs,
-                                                                 train_ctr + test_ctr, test_images, test_labels, False,
-                                                                 copy, DS_name)
+                                                                    label_suffix, data_type, path_out_imagesTs, path_out_labelsTs,
+                                                                    train_ctr + test_ctr, test_images, test_labels, False,
+                                                                    copy, DS_name)
 
 
         else:
