@@ -1,9 +1,10 @@
 """
 Run inference on a whole dataset using nnUNetv2 on fMRI BIDS datasets.
 
-Usage: python run_nnunet_inference.py --path-dataset_bids <PATH_TO_BIDS_DATASET> --path-out <PATH_TO_OUTPUT> --path-model <PATH_TO_MODEL> --use-best-checkpoint
+Usage: python run_nnunet_inference.py --path-dataset_bids <PATH_TO_BIDS_DATASET> --path-out <PATH_TO_OUTPUT> --path-model <PATH_TO_MODEL> --use-best-checkpoint -path-qc <PATH_TO_QC>
 
-Authors: Rohan Banerjee and Naga Karthik
+Authors: Rohan Banerjee 
+Initial script author: Naga Karthik
 """
 
 import os
