@@ -35,4 +35,4 @@ python run_nnunet_inference.py --path-dataset_bids <PATH_TO_BIDS_DATASET> --path
 ```
 
 ## Expected output
-There would be a folder names same as mentioned in `--path-out` which would contain the predicted files with the same name as the subject image files. The QC would be present inside the directory mentioned in `--path-qc`
+There would be a folder named same as mentioned in `--path-out` which would contain the predicted files with the same name as the subject image files. The QC would be present inside the directory mentioned in `--path-qc`
