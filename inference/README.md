@@ -31,7 +31,7 @@ Note: Internal for now, please email banerjee.rohan98@gmail.com for access
 
 5. Update the placeholders (paths written inside `<>`) and run the following command:
 ```
-python run_nnunet_inference.py --path-dataset_bids <PATH_TO_BIDS_DATASET> --path-out <PATH_TO_OUTPUT> --path-model <PATH_TO_MODEL> --use-best-checkpoint -path-qc <PATH_TO_QC>
+python run_inference.py --path-dataset_bids <PATH_TO_BIDS_DATASET> --path-out <PATH_TO_OUTPUT> --path-model <PATH_TO_MODEL> --use-best-checkpoint -path-qc <PATH_TO_QC>
 ```
 
 ## Expected output
