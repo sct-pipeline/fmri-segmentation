@@ -34,7 +34,7 @@ Note: Internal for now, please email banerjee.rohan98@gmail.com for access
 If you want to run inference on only an image,
 python run_inference.py --path-images <PATH_TO_IMAGE> --path-out <PATH_TO_OUTPUT> --path-model <PATH_TO_MODEL> --use-best-checkpoint -path-qc <PATH_TO_QC>
 
-If you want to run it on a whole BIDS-compatible dataset folder, 
+If you want to run inference on a whole BIDS-compatible dataset folder, 
 python run_inference.py --path-dataset_bids <PATH_TO_BIDS_DATASET> --path-out <PATH_TO_OUTPUT> --path-model <PATH_TO_MODEL> --use-best-checkpoint -path-qc <PATH_TO_QC>
 ```
 
