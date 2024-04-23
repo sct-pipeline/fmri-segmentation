@@ -183,37 +183,6 @@ def main():
     # uses all the folds available in the model folder by default
     folds_avail = [f.split('_')[-1] for f in os.listdir(args.path_model) if f.startswith('fold_')]
 
-    # ---------------------------------------------------------------
-    # OPTION 1: Currently, pip install nnUNetv2 does not have the latest version of nnUNet's inference 
-    # which is defined in OPTION 2. Hence, this method
-    # ---------------------------------------------------------------
-
-    # print('Starting inference...')
-    # start = time.time()
-    # # directly call the predict function
-    # predictor(
-    #     list_of_lists_or_source_folder=path_data_tmp, 
-    #     output_folder=path_out,
-    #     model_training_output_dir=args.path_model,
-    #     use_folds=folds_avail,
-    #     tile_step_size=0.5,
-    #     use_gaussian=True,                                      # applies gaussian noise and gaussian blur
-    #     use_mirroring=True if args.use_mirroring else False,    # test time augmentation by mirroring on all axes
-    #     perform_everything_on_gpu=True if args.use_gpu else False,
-    #     device=torch.device('cuda', 0) if args.use_gpu else torch.device('cpu'),
-    #     verbose=False,
-    #     save_probabilities=False,
-    #     overwrite=True,
-    #     checkpoint_name='checkpoint_final.pth' if not args.use_best_checkpoint else 'checkpoint_best.pth',
-    #     num_processes_preprocessing=3,
-    #     num_processes_segmentation_export=3
-    # )
-    # end = time.time()
-    
-    # ---------------------------------------------------------------
-    # OPTION 2
-    # ---------------------------------------------------------------
-
     print('Starting inference...')
     start = time.time()
     # instantiate the nnUNetPredictor
