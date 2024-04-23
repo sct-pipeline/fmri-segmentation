@@ -36,9 +36,6 @@ Method 1 (when running on whole dataset):
 def get_parser():
     # parse command line arguments
     parser = argparse.ArgumentParser(description='Segment images using nnUNet')
-    parser.add_argument('--path-dataset', default=None, type=str,
-                        help='Path to the test dataset folder. Use this argument only if you want '
-                        'predict on a whole dataset.')
     parser.add_argument('--path-dataset_bids', default=None, type=str,
                         help='Path to the test bids dataset folder. Use this argument only if you want '
                         'predict on a whole dataset.')
@@ -50,9 +47,6 @@ def get_parser():
     parser.add_argument('--path-model', required=True, 
                         help='Path to the model directory. This folder should contain individual folders '
                         'like fold_0, fold_1, etc.',)
-    # parser.add_argument('--use-all-folds', action='store_true', default=False,
-    #                     help='Specify the folds of the trained model that should be used for prediction. '
-    #                          'Default: (0, 1, 2, 3, 4)')
     parser.add_argument('--use-gpu', action='store_true', default=False,
                         help='Use GPU for inference. Default: False')
     parser.add_argument('--use-mirroring', action='store_true', default=False,
@@ -100,26 +94,6 @@ def add_suffix(fname, suffix):
     stem, ext = splitext(fname)
     return os.path.join(stem + suffix + ext)
 
-
-def convert_filenames_to_nnunet_format(path_dataset):
-
-    # create a temporary folder at the same level as the test folder
-    path_tmp = os.path.join(os.path.dirname(path_dataset), 'tmp')
-    if not os.path.exists(path_tmp):
-        os.makedirs(path_tmp, exist_ok=True)
-
-    for f in os.listdir(path_dataset):
-        if f.endswith('.nii.gz') or f.endswith('.png'):
-            # get absolute path to the image
-            f = os.path.join(path_dataset, f)
-            # add suffix
-            f_new = add_suffix(f, '_0000')
-            # copy to tmp folder
-            os.system('cp {} {}'.format(f, os.path.join(path_tmp, os.path.basename(f_new))))
-
-    return path_tmp
-
-
 def convert_bids_to_a_folder(path_dataset_bids):
 
     path_tmp = os.path.join(os.path.dirname(path_dataset_bids), 'tmp')
@@ -166,7 +140,7 @@ def main():
     if not os.path.exists(args.path_out):
         os.makedirs(args.path_out, exist_ok=True)
 
-    if args.path_dataset is not None and args.path_images is not None:
+    if args.path_dataset_bids is not None and args.path_images is not None:
         raise ValueError('You can only specify either --path-dataset or --path-images (not both). See --help for more info.')
     
     if args.path_dataset_bids is not None:
