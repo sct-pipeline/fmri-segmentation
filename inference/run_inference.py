@@ -42,6 +42,9 @@ def get_parser():
     parser.add_argument('--path-dataset_bids', default=None, type=str,
                         help='Path to the test bids dataset folder. Use this argument only if you want '
                         'predict on a whole dataset.')
+    parser.add_argument('--path-images', default=None, nargs='+', type=str,
+                        help='List of images to segment. Use this argument only if you want '
+                        'predict on a single image or list of invidiual images.')
     parser.add_argument('--path-out', help='Path to output directory.', required=True)
     parser.add_argument('--path-qc', help='Path to output directory.', required=True)
     parser.add_argument('--path-model', required=True, 
@@ -130,7 +133,7 @@ def convert_bids_to_a_folder(path_dataset_bids):
 
     for root, dirs, files in os.walk(path_dataset_bids):
         for filename in files:
-            if filename.endswith('bold.nii.gz'):
+            if 'bold' in filename:
                 shutil.copy2(root + "/" + filename, path_tmp_bids + "/" + filename)
 
     for f in os.listdir(path_tmp_bids):
@@ -145,15 +148,15 @@ def convert_bids_to_a_folder(path_dataset_bids):
 
     return path_tmp, path_tmp_bids
 
-def run_qc(path_dataset_bids, path_out, path_qc):
-    for root, dirs, files in os.walk(path_dataset_bids):
+def run_qc(path_in, path_out, path_qc):
+    for root, dirs, files in os.walk(path_out):
         for filename in files:
-            if filename.endswith('bold.nii.gz'):
-                subprocess.run(f"sct_qc -i {root}/{filename} -s {path_out}/{filename} -qc {path_qc}/qc -p sct_deepseg_sc", shell=True, check=True)
+            if 'bold' in filename and 'seg' not in filename and filename.endswith('.nii.gz'):
+                filename_image = filename.split("_pred.nii.gz")[0]
+                root_img, dirs_img = os.path.split(path_in)
+                if dirs_img.split('.nii.gz')[0] == filename_image:
+                    subprocess.run(f"sct_qc -i {root_img}/{filename_image}.nii.gz -s {path_out}/{filename} -qc {path_qc}/qc -p sct_deepseg_sc", shell=True, check=True)
                 
-                
-    
-
 
 def main():
 
@@ -177,6 +180,31 @@ def main():
         print('Creating temporary folder with proper filenames...')
         path_data_tmp, path_tmp_bids = convert_bids_to_a_folder(args.path_dataset_bids)
         path_out = args.path_out
+        os.system('rm -rf {}'.format(path_tmp_bids))
+
+    elif args.path_images is not None:
+        # NOTE: for individual images, the _0000 suffix is not needed. 
+        # BUT, the input images should be in a nested list, and the output paths in a list.
+        # get list of images from input argument
+        print(f'Found {len(args.path_images)} images. Running inference on them...')
+        # path_data_tmp = [[os.path.basename(f)] for f in args.path_images]
+        path_data_tmp = [[f] for f in args.path_images]
+        print(path_data_tmp)
+
+        # path_out = args.path_out
+        path_out = []
+        # # add suffix '_pred' to predicted images
+        for f in args.path_images:
+            fname = Path(f).name
+            # strip ALL suffixes
+            print(fname)
+            fname = fname.split(".nii.gz")[0]
+            path_pred = os.path.join(args.path_out, add_suffix(fname, '_pred')) 
+            path_out.append(path_pred)
+        print(path_out)
+
+
+
 
     # uses all the folds available in the model folder by default
     folds_avail = [f.split('_')[-1] for f in os.listdir(args.path_model) if f.startswith('fold_')]
@@ -249,10 +277,6 @@ def main():
     end = time.time()
     print('Inference done.')
 
-    print('Deleting the temporary folder...')
-    # delete the temporary folder
-    os.system('rm -rf {}'.format(path_data_tmp))
-    os.system('rm -rf {}'.format(path_tmp_bids))
 
     print('----------------------------------------------------')
     print('Results can be found in: {}'.format(args.path_out))
@@ -261,7 +285,17 @@ def main():
     print('Total time elapsed: {:.2f} seconds'.format(end - start))
 
     if args.path_qc is not None:
-        run_qc(args.path_dataset_bids, args.path_out, args.path_qc)
+        if args.path_dataset_bids is not None:
+            run_qc(args.path_dataset_bids, args.path_out, args.path_qc)
+        
+        if args.path_images is not None:
+            path_images = ''.join(args.path_images)
+            # path_images = path_images.split("sub")[0]
+            run_qc(path_images, args.path_out, args.path_qc)
+    
+    print('Deleting the temporary folder...')
+    # delete the temporary folder
+    os.system('rm -rf {}'.format(path_data_tmp))
 
 if __name__ == '__main__':
     main()
