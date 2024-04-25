@@ -1,7 +1,7 @@
 # fmri-segmentation
 Repository for the project on automatic spinal cord segmentation based on fMRI EPI data
 
-To share data for the project, please read wiki here!
+To share data for the project, please read wiki [here](https://github.com/sct-pipeline/fmri-segmentation/wiki/Data-contribution-details)!
 
 #### [Internal] Link to dataset and segmentation model weights: [here](https://drive.google.com/drive/folders/14rxPz_mWV1AOSULBFFU7A5IT9zX5PvcI?usp=sharing)
 
