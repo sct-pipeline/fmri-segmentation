@@ -65,7 +65,6 @@ CUDA_VISIBLE_DEVICES=<GPU_ID> nnUNetv2_train <DATASET_ID> 3d_fullres <FOLD_NUMBE
 Step 1: Install latest SCT version (cd into spinalcordtoolbox and git pull master)
 Step 2: sct_deepseg -install-task seg_sc_epi
 Step 3: sct_deepseg -task seg_sc_epi -i <IMAGE_PATH> -c bold -o <OUTPUT_PATH>
-
 ```
 
 
