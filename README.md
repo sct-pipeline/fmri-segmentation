@@ -1,9 +1,17 @@
-# fmri-segmentation
-Repository for the project on automatic spinal cord segmentation based on fMRI EPI data
+# Automatic Spinal Cord Segmentation on fMRI EPI Data
+Repository for the project containing training information, model weights and inference instructions.
+
 
 To share data for the project, please read wiki [here](https://github.com/sct-pipeline/fmri-segmentation/wiki/Data-contribution-details)!
 
 #### [Internal] Link to dataset and segmentation model weights: [here](https://drive.google.com/drive/folders/14rxPz_mWV1AOSULBFFU7A5IT9zX5PvcI?usp=sharing)
+
+## To run inference on your data, follow the below steps:
+```
+Step 1: Install latest SCT version (cd into spinalcordtoolbox and git pull master)
+Step 2: sct_deepseg -install-task seg_sc_epi
+Step 3: sct_deepseg -task seg_sc_epi -i <IMAGE_PATH> -c bold -o <OUTPUT_PATH>
+```
 
 ## Getting started
 
@@ -60,13 +68,6 @@ python convert_bids_to_nnUNetV2.py --path-data <PATH_TO_DOWNLOADED_BIDS_DATASET>
 nnUNetv2_plan_and_preprocess -d <DATASET_ID> --verify_dataset_integrity
 CUDA_VISIBLE_DEVICES=<GPU_ID> nnUNetv2_train <DATASET_ID> 3d_fullres <FOLD_NUMBER>
 ```
-7. To use this model for your data,
-```
-Step 1: Install latest SCT version (cd into spinalcordtoolbox and git pull master)
-Step 2: sct_deepseg -install-task seg_sc_epi
-Step 3: sct_deepseg -task seg_sc_epi -i <IMAGE_PATH> -c bold -o <OUTPUT_PATH>
-```
-
 
 
 
