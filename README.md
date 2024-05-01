@@ -1,17 +1,10 @@
 # Automatic Spinal Cord Segmentation on fMRI EPI Data
-Repository for the project containing training information, model weights and inference instructions.
+Repository for the project containing training information, model weights and inference instructions. The code is based on the [nnUNetv2 framework](https://github.com/MIC-DKFZ/nnUNet).
 
 
 To share data for the project, please read wiki [here](https://github.com/sct-pipeline/fmri-segmentation/wiki/Data-contribution-details)!
 
 #### [Internal] Link to dataset and segmentation model weights: [here](https://drive.google.com/drive/folders/14rxPz_mWV1AOSULBFFU7A5IT9zX5PvcI?usp=sharing)
-
-## To run inference on your data, follow the below steps:
-```
-Step 1: Install latest SCT version (cd into spinalcordtoolbox and git pull master)
-Step 2: sct_deepseg -install-task seg_sc_epi
-Step 3: sct_deepseg -task seg_sc_epi -i <IMAGE_PATH> -c bold -o <OUTPUT_PATH>
-```
 
 ## Getting started
 
@@ -19,6 +12,13 @@ Step 3: sct_deepseg -task seg_sc_epi -i <IMAGE_PATH> -c bold -o <OUTPUT_PATH>
 - [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) 
 - Python
 - [nnUNetv2](https://github.com/MIC-DKFZ/nnUNet)
+
+
+## To run inference on your data, follow the below steps:
+```
+sct_deepseg -install-task seg_sc_epi
+sct_deepseg -task seg_sc_epi -i <IMAGE_PATH> -c bold -o <OUTPUT_PATH>
+```
 
 ### Step 1: Cloning the Repository
 
