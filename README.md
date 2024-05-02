@@ -4,7 +4,7 @@ Repository for the project containing training information, model weights and in
 
 To share data for the project, please read wiki [here](https://github.com/sct-pipeline/fmri-segmentation/wiki/Data-contribution-details)!
 
-#### [Internal] Link to dataset and segmentation model weights: [here](https://drive.google.com/drive/folders/14rxPz_mWV1AOSULBFFU7A5IT9zX5PvcI?usp=sharing)
+#### Link to latest segmentation model weights: [here](https://github.com/sct-pipeline/fmri-segmentation/releases/tag/v0.2)
 
 ## Getting started
 
@@ -19,6 +19,9 @@ To share data for the project, please read wiki [here](https://github.com/sct-pi
 sct_deepseg -install-task seg_sc_epi
 sct_deepseg -task seg_sc_epi -i <IMAGE_PATH> -c bold -o <OUTPUT_PATH>
 ```
+
+
+## To reproduce the model training:
 
 ### Step 1: Cloning the Repository
 
