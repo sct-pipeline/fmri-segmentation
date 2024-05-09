@@ -1,0 +1,6 @@
+{
+    "path_data"   : "PATH_TO_DATASET",
+    "path_output" : "PATH_TO_OUTPUT",
+    "script"      : "<PATH_TO>/run_seg_methods.sh",
+    "jobs"        : -1
+}
