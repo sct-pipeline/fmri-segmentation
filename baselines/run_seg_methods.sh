@@ -5,7 +5,7 @@
 # sct_deepseg_sc --> _sct_deepseg_sc
 # sct_propseg --> _sct_propseg
 
-# Usage: to be filled
+# Usage: sct_run_batch -config config.json
 
 # Author: Rohan Banerjee
 
@@ -52,4 +52,15 @@ sct_deepseg -task seg_sc_epi -i ${file_bold} -o ${PATH_DATA}/derivatives/labels/
 sct_deepseg_sc -i ${file_bold} -c t2s -o ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-deepseg.nii.gz
 
 # For running inference using sct_propseg model on the BIDS data
-sct_propseg -i ${file_bold} -c t2s -ofolder ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-propseg.nii.gz
+# Check if the file with _seg-propseg.nii.gz already exists
+if [ ! -f ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-propseg.nii.gz ]; then
+    # Run sct_propseg command
+    sct_propseg -i ${file_bold} -c t2s -ofolder ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-propseg.nii.gz
+fi
+
+# Check if PATH_QC is not empty
+if [ -n "$PATH_QC" ]; then
+    sct_qc -i ${file_bold} -s ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-sc_epi.nii.gz -p sct_deepseg_sc -qc ${PATH_QC}
+    sct_qc -i ${file_bold} -s ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-deepseg.nii.gz -p sct_deepseg_sc -qc ${PATH_QC}
+    sct_qc -i ${file_bold} -s ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-propseg.nii.gz -p sct_propseg -qc ${PATH_QC}
+fi
