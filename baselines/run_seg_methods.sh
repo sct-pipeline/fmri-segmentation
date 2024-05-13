@@ -60,7 +60,7 @@ echo '{
 }' > ${episeg_json}
 
 # For running inference using sct_deepseg_sc model on the BIDS data
-sct_deepseg_sc -i ${file_bold} -c t2s -o ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-deepseg.nii.gz
+sct_deepseg_sc -i ${file_bold} -c t2 -o ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-deepseg.nii.gz
 
 # Create JSON file with deepseg output
 deepseg_output=${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-deepseg
@@ -78,7 +78,7 @@ echo '{
 # Check if the file with _seg-propseg.nii.gz already exists
 if [ ! -f ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-propseg.nii.gz ]; then
     # Run sct_propseg command
-    sct_propseg -i ${file_bold} -c t2s -o ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-propseg.nii.gz
+    sct_propseg -i ${file_bold} -c t2 -o ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-propseg.nii.gz
     # Removing the centerline file
     rm -rf ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_task-*_centerline.nii.gz
 
@@ -95,9 +95,7 @@ if [ ! -f ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-propseg
     }' > ${propseg_json}
 fi
 
-# Check if PATH_QC is not empty
-if [ -n "$PATH_QC" ]; then
-    sct_qc -i ${file_bold} -s ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-sc_epi.nii.gz -p sct_deepseg_sc -qc ${PATH_QC}
-    sct_qc -i ${file_bold} -s ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-deepseg.nii.gz -p sct_deepseg_sc -qc ${PATH_QC}
-    sct_qc -i ${file_bold} -s ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-propseg.nii.gz -p sct_propseg -qc ${PATH_QC}
-fi
+
+sct_qc -i ${file_bold} -s ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-sc_epi.nii.gz -p sct_deepseg_sc -qc ${PATH_QC}
+sct_qc -i ${file_bold} -s ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-deepseg.nii.gz -p sct_deepseg_sc -qc ${PATH_QC}
+sct_qc -i ${file_bold} -s ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-propseg.nii.gz -p sct_propseg -qc ${PATH_QC}
