@@ -1,6 +1,5 @@
 import numpy as np
 import nibabel as nib
-import tensorflow.keras.backend as K 
 import os
 
 # mention the directory where the predictions are stored
@@ -9,10 +8,6 @@ test_files = os.listdir('/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_
 subjects = [file_name.split('_')[0] for file_name in test_files]
 
 def dice_coefficient(seg1, seg2, smooth = 1):
-    # y_truef=K.flatten(seg1)
-    # y_predf=K.flatten(seg2)
-    # intersection = K.sum(y_truef* y_predf)
-    # return((2* intersection + smooth) / (K.sum(y_truef) + K.sum(y_predf) + smooth))
 
     intersection = np.sum(seg1[seg2==1])
     union = np.sum(seg1) + np.sum(seg2)
