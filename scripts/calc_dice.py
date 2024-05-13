@@ -1,11 +1,8 @@
 import numpy as np
 import nibabel as nib
 import os
-
-# mention the directory where the predictions are stored
-test_files = os.listdir('/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/data_leipzig_pain/leipzig-pain_predictions/')
-
-subjects = [file_name.split('_')[0] for file_name in test_files]
+from scipy.spatial.distance import directed_hausdorff
+import argparse
 
 def dice_coefficient(seg1, seg2, smooth = 1):
 
@@ -15,31 +12,44 @@ def dice_coefficient(seg1, seg2, smooth = 1):
         return 1.0
     else:
         return 2.0 * intersection / union
+    
+def hausdorff_distance_calc(seg1, seg2):
+    predicted_coords = np.argwhere(seg1)
+    truth_coords = np.argwhere(seg2)
+
+    hausdorff_distance = max(directed_hausdorff(predicted_coords, truth_coords)[0],
+                             directed_hausdorff(truth_coords, predicted_coords)[0])
+
+    return hausdorff_distance
 
 # Load the segmentation masks
 
 all_dice = []
 
-for i in range(len(subjects)):
+def main(predictions_dir, ground_truth_dir, output_file):
+    test_files = os.listdir(predictions_dir)
+    subjects = [file_name.split('_')[0] for file_name in test_files]
 
-    # mask1 is the prediction
-    mask1 = nib.load("/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/data_leipzig_pain/leipzig-pain_predictions/" + subjects[i] + "_task-rest_bold_class-0_pred.nii.gz")
+    all_dice = []
 
-    # mask2 is the ground truth
-    mask2 = nib.load("/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/data_leipzig_pain/derivatives/label/" + subjects[i] + "/func/" + subjects[i] + "_task-pain_desc-spinalcord_mask.nii.gz")
+    for i in range(len(subjects)):
+        mask1 = nib.load(os.path.join(predictions_dir, subjects[i] + "_task-rest_bold_class-0_pred.nii.gz"))
+        mask2 = nib.load(os.path.join(ground_truth_dir, subjects[i], "func", subjects[i] + "_task-pain_desc-spinalcord_mask.nii.gz"))
 
+        data1 = mask1.get_fdata()
+        data2 = mask2.get_fdata()
 
-    # Get the data arrays for the masks
-    data1 = mask1.get_fdata()
-    data2 = mask2.get_fdata()
+        dice1_2 = dice_coefficient(data2, data1)
+        all_dice.append(dice1_2*100)
 
-    # Calculate the Dice coefficients
-    dice1_2 = dice_coefficient(data2, data1)
-    all_dice.append(dice1_2*100)
+    np.savetxt(output_file, all_dice, delimiter=",")
+    print(all_dice)
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Calculate Dice Coefficients.')
+    parser.add_argument('--predictions_dir', type=str, required=True, help='Directory where the predictions are stored')
+    parser.add_argument('--ground_truth_dir', type=str, required=True, help='Directory where the ground truth masks are stored')
+    parser.add_argument('--output_file', type=str, required=True, help='Output file to save the Dice coefficients')
+    args = parser.parse_args()
 
-    # write a numpy array as a columnin a csv file, with column name as dice
-np.savetxt("/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/data_leipzig_pain/deepsegvspreds_dice.csv", all_dice, delimiter=",")
-
-    # Print the results
-print(all_dice)
+    main(args.predictions_dir, args.ground_truth_dir, args.output_file)
