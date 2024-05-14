@@ -1,3 +1,12 @@
+import numpy as np
+import nibabel as nib
+import os
+from scipy.spatial.distance import directed_hausdorff
+import argparse
+import glob
+import statistics
+import csv
+
 """
 This script calculates the Dice coefficient and the Hausdorff Distance between the predicted segmentation masks and the ground truth masks.
 Usage: python calc_dice.py --predictions_dir <PATH_TO_PREDS>    
@@ -29,14 +38,6 @@ Example dataset:
 
 Author: Rohan Banerjee
 """
-
-import numpy as np
-import nibabel as nib
-import os
-from scipy.spatial.distance import directed_hausdorff
-import argparse
-import glob
-import statistics
 
 def dice_coefficient(seg1, seg2, smooth = 1):
     intersection = np.sum(seg1[seg2==1])
@@ -87,15 +88,19 @@ def main(predictions_dir, ground_truth_dir, pred_suffix ,output_file):
             print("Dice: ", dice1_2)
             print("Hausdorff: ", hausdorff1_2)
             all_dice.append(dice1_2*100)
+            all_hausdorff.append(hausdorff1_2)
         else:
             # handle the case where mask1 is not present
             dice1_2 = 0
             hausdorff1_2 = 100
 
+        with open(output_file, 'a', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter=',')
+            writer.writerow(["Ground Truth Filename", "Prediction Filename", "Dice Score", "Hausdorff Distance"])
+            writer.writerow([subjects[i] + "_seg-manual.nii.gz", subjects[i] + pred_suffix + ".nii.gz", dice1_2, hausdorff1_2])
 
-
-    np.savetxt(output_file, all_dice, delimiter=",")
     print(all_dice)
+    print(all_hausdorff)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Calculate Dice Coefficients.')
