@@ -59,6 +59,21 @@ echo '{
     ]
 }' > ${episeg_json}
 
+# For running inference using sct_sc_contrast_agnostic model on the BIDS data
+sct_deepseg -task seg_sc_contrast_agnostic -i ${file_bold} -o ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-sc_contrast_agnostic.nii.gz
+
+# Create JSON file with Contrast Agnostic output
+contrast_agnostic_output=${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-sc_contrast_agnostic
+contrast_agnostic_json=${contrast_agnostic_output%}.json
+echo '{
+    "GeneratedBy": [
+        {
+            "Author": "sct_deepseg -task seg_sc_contrast_agnostic",
+            "Date": "'"$(date)"'"
+        }
+    ]
+}' > ${contrast_agnostic_json}
+
 # For running inference using sct_deepseg_sc model on the BIDS data
 sct_deepseg_sc -i ${file_bold} -c t2 -o ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-deepseg.nii.gz
 
@@ -99,3 +114,4 @@ fi
 sct_qc -i ${file_bold} -s ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-sc_epi.nii.gz -p sct_deepseg_sc -qc ${PATH_QC}
 sct_qc -i ${file_bold} -s ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-deepseg.nii.gz -p sct_deepseg_sc -qc ${PATH_QC}
 sct_qc -i ${file_bold} -s ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-propseg.nii.gz -p sct_propseg -qc ${PATH_QC}
+sct_qc -i ${file_bold} -s ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-sc_contrast_agnostic.nii.gz -p sct_deepseg_sc -qc ${PATH_QC}
