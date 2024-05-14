@@ -96,7 +96,8 @@ def main(predictions_dir, ground_truth_dir, pred_suffix ,output_file):
 
         with open(output_file, 'a', newline='') as csvfile:
             writer = csv.writer(csvfile, delimiter=',')
-            writer.writerow(["Ground Truth Filename", "Prediction Filename", "Dice Score", "Hausdorff Distance"])
+            if csvfile.tell() == 0:
+                writer.writerow(["Ground Truth Filename", "Prediction Filename", "Dice Score", "Hausdorff Distance"])
             writer.writerow([subjects[i] + "_seg-manual.nii.gz", subjects[i] + pred_suffix + ".nii.gz", dice1_2, hausdorff1_2])
 
     print(all_dice)
