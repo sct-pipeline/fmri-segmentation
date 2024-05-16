@@ -9,7 +9,7 @@ import csv
 
 """
 This script calculates the Dice coefficient and the Hausdorff Distance between the predicted segmentation masks and the ground truth masks.
-Usage: python calc_dice.py --predictions_dir <PATH_TO_PREDS>    
+Usage: python get_metrics.py --predictions_dir <PATH_TO_PREDS>    
             --ground_truth_dir <PATH_TO_GT>
              --output_file <PATH_TO_CSV> --pred_suffix <PREDICTION_SUFFIX>
 
