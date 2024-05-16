@@ -6,7 +6,7 @@ import argparse
 import glob
 import statistics
 import csv
-
+import matplotlib.pyplot as plt
 """
 This script calculates the Dice coefficient and the Hausdorff Distance between the predicted segmentation masks and the ground truth masks.
 Usage: python get_metrics.py --predictions_dir <PATH_TO_PREDS>    
@@ -56,11 +56,15 @@ def hausdorff_distance_calc(seg1, seg2):
 
     return hausdorff_distance
 
+# def generate_plot():
+    
+
+
 # Load the segmentation masks
 
 all_dice = []
 
-def main(predictions_dir, ground_truth_dir, pred_suffix ,output_file):
+def main(predictions_dir, ground_truth_dir, pred_suffix, output_file):
     test_files = os.listdir(predictions_dir)
     test_files = [file_name for file_name in test_files if file_name != '.DS_Store']
     subjects = [file_name.split('_')[0] for file_name in test_files]
@@ -84,9 +88,9 @@ def main(predictions_dir, ground_truth_dir, pred_suffix ,output_file):
 
             dice1_2 = dice_coefficient(data2, data1)
             hausdorff1_2 = hausdorff_distance_calc(data1, data2)
-            print("Subject: ", subjects[i])
-            print("Dice: ", dice1_2)
-            print("Hausdorff: ", hausdorff1_2)
+            # print("Subject: ", subjects[i])
+            # print("Dice: ", dice1_2)
+            # print("Hausdorff: ", hausdorff1_2)
             all_dice.append(dice1_2*100)
             all_hausdorff.append(hausdorff1_2)
         else:
@@ -94,14 +98,24 @@ def main(predictions_dir, ground_truth_dir, pred_suffix ,output_file):
             dice1_2 = 0
             hausdorff1_2 = 100
 
-        with open(output_file, 'a', newline='') as csvfile:
-            writer = csv.writer(csvfile, delimiter=',')
-            if csvfile.tell() == 0:
-                writer.writerow(["Ground Truth Filename", "Prediction Filename", "Dice Score", "Hausdorff Distance"])
-            writer.writerow([subjects[i] + "_seg-manual.nii.gz", subjects[i] + pred_suffix + ".nii.gz", dice1_2, hausdorff1_2])
+    mean_dice = statistics.mean(all_dice)
+    std_dev_dice = statistics.stdev(all_dice)
+    mean_hausdorff = statistics.mean(all_hausdorff)
+    std_dev_hausdorff = statistics.stdev(all_hausdorff)
 
-    print(all_dice)
-    print(all_hausdorff)
+    print("Dice: ", statistics.mean(all_dice), statistics.stdev(all_dice))
+    print("Hausdorff: ",statistics.mean(all_hausdorff), statistics.stdev(all_hausdorff))
+
+    with open(output_file, 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',')
+        if csvfile.tell() == 0:
+        #     writer.writerow(["Ground Truth Filename", "Prediction Filename", "Dice Score", "Hausdorff Distance"])
+        # writer.writerow([subjects[i] + "_seg-manual.nii.gz", subjects[i] + pred_suffix + ".nii.gz", dice1_2, hausdorff1_2])
+            writer.writerow(["Model", "Dice Score", "Hausdorff Distance"])
+        writer.writerow([pred_suffix, "{:.2f}".format(mean_dice) + "+-" + "{:.2f}".format(std_dev_dice), "{:.2f}".format(mean_hausdorff) + "+-" + "{:.2f}".format(std_dev_hausdorff)])
+
+    # print(all_dice)
+    # print(all_hausdorff)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Calculate Dice Coefficients.')
