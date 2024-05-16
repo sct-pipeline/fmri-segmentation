@@ -83,7 +83,7 @@ fi
 
 if [ ! -f ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-deepseg.nii.gz ]; then
     # For running inference using sct_deepseg_sc model on the BIDS data
-    sct_deepseg_sc -i ${file_bold} -c t2 -o ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-deepseg.nii.gz
+    sct_deepseg_sc -i ${file_bold} -c t2s -o ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-deepseg.nii.gz
 
     # Create JSON file with deepseg output
     deepseg_output=${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-deepseg
@@ -104,7 +104,7 @@ fi
 # Check if the file with _seg-propseg.nii.gz already exists
 if [ ! -f ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-propseg.nii.gz ]; then
     # Run sct_propseg command
-    sct_propseg -i ${file_bold} -c t2 -o ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-propseg.nii.gz
+    sct_propseg -i ${file_bold} -c t2s -o ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_seg-propseg.nii.gz
     # Removing the centerline file
     rm -rf ${PATH_DATA}/derivatives/labels/${SUBJECT}/func/${SUBJECT}_task-*_centerline.nii.gz
 
