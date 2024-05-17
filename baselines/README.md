@@ -6,7 +6,12 @@ This folder contains the scripts to run inference on a BIDS dataset using the `s
 
 Follow the steps below:
 
-Step 1:
+1. Enter the directory containing the scripts
 ```
 cd fmri-segmentation/baselines
+```
+
+2. Update the paths in the `config,json` file
+```
+
 ```
