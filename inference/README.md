@@ -1,4 +1,4 @@
-## Steps to run inference
+## Steps to run inference with unreleased models
 
 To run inference on your own data based on your latest EPI segmentation model, run the following steps:
 
