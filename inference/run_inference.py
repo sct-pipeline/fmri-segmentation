@@ -107,7 +107,7 @@ def convert_bids_to_a_folder(path_dataset_bids):
 
     for root, dirs, files in os.walk(path_dataset_bids):
         for filename in files:
-            if 'bold' in filename:
+            if 'bold' in filename and filename.endswith('.nii.gz') and 'seg' not in filename:
                 shutil.copy2(root + "/" + filename, path_tmp_bids + "/" + filename)
 
     for f in os.listdir(path_tmp_bids):
@@ -126,10 +126,10 @@ def run_qc(path_in, path_out, path_qc):
     for root, dirs, files in os.walk(path_out):
         for filename in files:
             if 'bold' in filename and 'seg' not in filename and filename.endswith('.nii.gz'):
-                filename_image = filename.split("_pred.nii.gz")[0]
+                filename_image = filename.split("_seg-manual.nii.gz")[0]
+                print(filename, filename_image)
                 root_img, dirs_img = os.path.split(path_in)
-                if dirs_img.split('.nii.gz')[0] == filename_image:
-                    subprocess.run(f"sct_qc -i {root_img}/{filename_image}.nii.gz -s {path_out}/{filename} -qc {path_qc}/qc -p sct_deepseg_sc", shell=True, check=True)
+                subprocess.run(f"sct_qc -i {root_img}/dirs_img/{filename_image} -s {path_out}/{filename} -qc {path_qc}/qc -p sct_deepseg_sc", shell=True, check=True)
                 
 
 def main():
