@@ -126,10 +126,11 @@ def run_qc(path_in, path_out, path_qc):
     for root, dirs, files in os.walk(path_out):
         for filename in files:
             if 'bold' in filename and 'seg' not in filename and filename.endswith('.nii.gz'):
-                filename_image = filename.split("_seg-manual.nii.gz")[0]
-                print(filename, filename_image)
+                filename_seg = add_suffix(filename, '_seg-manual')
+                sub_name = filename.split("_")[0]
+                print(filename, filename_seg)
                 root_img, dirs_img = os.path.split(path_in)
-                subprocess.run(f"sct_qc -i {root_img}/dirs_img/{filename_image} -s {path_out}/{filename} -qc {path_qc}/qc -p sct_deepseg_sc", shell=True, check=True)
+                subprocess.run(f"sct_qc -i {root_img}/{dirs_img}/{sub_name}/func/{filename} -s {path_out}/{filename} -qc {path_qc}/qc -p sct_deepseg_sc", shell=True, check=True)
                 
 
 def main():
