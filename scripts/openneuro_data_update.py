@@ -66,7 +66,7 @@ def main():
     for i, subject in enumerate(subjects):
         print(subjects[i])
         #todo: add a arguement to get the nnUnet dataset prefix, I am currently assuming it to be spinefmri (as per my dataset)
-        files_source = glob.glob(f'{nnunet_dataset}/labelsTr/spinefmri-{subjects[i]}_*.nii.gz')
+        files_source = glob.glob(f'{nnunet_dataset}/labelsTr/spinefmri*{subjects[i]}_*.nii.gz')
         if files_source:
             source_path = files_source[0]
         else:
@@ -78,27 +78,28 @@ def main():
         else:
             print(f"No destination files found for subject {subjects[i]}")
         task = destination_path.split('_task-')[1].split('_desc')[0]
+        print(f"Updating {subjects[i]} with the manually corrected segmentation file")
         shutil.copyfile(source_path, destination_path)
         os.rename(destination_path, f'{openneuro_dataset}/derivatives/label/{subjects[i]}/func/{subjects[i]}_task-{task}_desc-spinalcordmask_manual.nii.gz')
 
     # Step 3: Update the JSON files linked to the dataset
-    files_destination_json = glob.glob(f'{openneuro_dataset}/derivatives/label/{subjects[i]}/func/{subjects[i]}_task-*.json')
-    if files_destination:
-        json_file_path = files_destination_json[0]
-    else:
-        print(f"No destination json files found for subject {subjects[i]}")
+        files_destination_json = glob.glob(f'{openneuro_dataset}/derivatives/label/{subjects[i]}/func/{subjects[i]}_task-*.json')
+        if files_destination:
+            json_file_path = files_destination_json[0]
+        else:
+            print(f"No destination json files found for subject {subjects[i]}")
 
-    with open(json_file_path, 'r') as outfile:
-        json_data = json.load(outfile)
+        with open(json_file_path, 'r') as outfile:
+            json_data = json.load(outfile)
 
-    # Assuming that the metadata already has the 'GeneratedBy' key
-    json_data['GeneratedBy'].append({'Name': 'Manual',
-                                     'Author': 'Rohan Banerjee and Merve Kaptan (Manually corrected after initial segmentation done by EPISeg model (https://github.com/sct-pipeline/fmri-segmentation/releases/tag/v0.2))',
-                                     'Date': time.strftime('%Y-%m-%d %H:%M:%S')})
+        # Assuming that the metadata already has the 'GeneratedBy' key
+        json_data['GeneratedBy'].append({'Name': 'Manual',
+                                        'Author': 'Rohan Banerjee and Merve Kaptan (Manually corrected after initial segmentation done by EPISeg model (https://github.com/sct-pipeline/fmri-segmentation/releases/tag/v0.2))',
+                                        'Date': time.strftime('%Y-%m-%d %H:%M:%S')})
 
-    with open(json_file_path, 'w') as file:
-        json.dump(json_data, file, indent=4)
-    print("JSON sidecar for {} was updated: {}".format(subjects[i], json_data))
+        with open(json_file_path, 'w') as file:
+            json.dump(json_data, file, indent=4)
+        print("JSON sidecar for {} was updated".format(subjects[i]))
 
 if __name__ == '__main__':
     main()
