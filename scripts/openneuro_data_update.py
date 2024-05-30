@@ -60,7 +60,7 @@ def main():
         task = destination_path.split('_task-')[1].split('_desc')[0]
         print(f"Updating {subjects[i]} with the manually corrected segmentation file")
         shutil.copyfile(source_path, destination_path)
-        os.rename(destination_path, f'{openneuro_dataset}/derivatives/label/{subjects[i]}/func/{subjects[i]}_task-{task}_desc-spinalcordmask_manual.nii.gz')
+        os.rename(destination_path, f'{openneuro_dataset}/derivatives/label/{subjects[i]}/func/{subjects[i]}_task-{task}_desc-spinalcordmask.nii.gz')
 
         files_destination_json = glob.glob(f'{openneuro_dataset}/derivatives/label/{subjects[i]}/func/{subjects[i]}_task-*.json')
         if files_destination:
