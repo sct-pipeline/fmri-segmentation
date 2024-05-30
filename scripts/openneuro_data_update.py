@@ -9,26 +9,7 @@ import glob
 """
 Usage: python openneuro_data_update.py -nnunet-dataset <PATH_TO_nnUNet> -openneuro-dataset <PATH_TO_OPENNEURO-DATASET> -corrected-subjects <PATH_TO_MANUALLY_CORRECTED_yml_FILE>
 
-
-step 1: takes a yml files as the input which contains all the names of the subjects which were manually corrected
-# step 2: This copies the segmentation files from the nnUNet dataset and copies it to the derivatives/label folder in the openneuro dataset
-# step 2.1: Rename the files as per the openneuro dataset
-# step 3: Update the json files linked to the dataset like the below
-# If the segmnetation json file already has
-# {
-#     "SpatialReference": "orig",
-#     "GeneratedBy": [
-#         {
-#             "Name": "Manual",
-#             "Author": "Nawal Kinany"
-#         },
-#         {
-#             "Name": "Manually corrected after initial segmentation done by EPISeg model (https://github.com/sct-pipeline/fmri-segmentation/releases/tag/v0.2)",
-#             "Author": "Rohan Banerjee adn Merve Kaptan"
-#             "Date": "<date and time from file metadata>" 
-#         }
-#     ]
-# }
+Authoir: Rohan Banerjee
 """
 
 def read_subjects_from_yaml(file_path):
@@ -62,7 +43,6 @@ def main():
     subjects = list(set(existing_subjects) & set(subjects))
     print(subjects)
 
-    # Step 2: Copy the segmentation files to the derivatives/label folder
     for i, subject in enumerate(subjects):
         print(subjects[i])
         #todo: add a arguement to get the nnUnet dataset prefix, I am currently assuming it to be spinefmri (as per my dataset)
@@ -82,7 +62,6 @@ def main():
         shutil.copyfile(source_path, destination_path)
         os.rename(destination_path, f'{openneuro_dataset}/derivatives/label/{subjects[i]}/func/{subjects[i]}_task-{task}_desc-spinalcordmask_manual.nii.gz')
 
-    # Step 3: Update the JSON files linked to the dataset
         files_destination_json = glob.glob(f'{openneuro_dataset}/derivatives/label/{subjects[i]}/func/{subjects[i]}_task-*.json')
         if files_destination:
             json_file_path = files_destination_json[0]
