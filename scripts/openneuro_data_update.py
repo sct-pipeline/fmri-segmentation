@@ -9,7 +9,7 @@ import glob
 """
 Usage: python openneuro_data_update.py -nnunet-dataset <PATH_TO_nnUNet> -openneuro-dataset <PATH_TO_OPENNEURO-DATASET> -corrected-subjects <PATH_TO_MANUALLY_CORRECTED_yml_FILE>
 
-Authoir: Rohan Banerjee
+Author: Rohan Banerjee
 """
 
 def read_subjects_from_yaml(file_path):
