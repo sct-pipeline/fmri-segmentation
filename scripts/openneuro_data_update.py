@@ -1,13 +1,16 @@
 import os
 import shutil
-import datetime
+import time
 import json
 import yaml
 import argparse
 import re
 import glob
+"""
+Usage: python openneuro_data_update.py -nnunet-dataset <PATH_TO_nnUNet> -openneuro-dataset <PATH_TO_OPENNEURO-DATASET> -corrected-subjects <PATH_TO_MANUALLY_CORRECTED_yml_FILE>
 
-# step 1: takes a yml files as the input which contains all the names of the subjects which were manually corrected
+
+step 1: takes a yml files as the input which contains all the names of the subjects which were manually corrected
 # step 2: This copies the segmentation files from the nnUNet dataset and copies it to the derivatives/label folder in the openneuro dataset
 # step 2.1: Rename the files as per the openneuro dataset
 # step 3: Update the json files linked to the dataset like the below
@@ -26,6 +29,7 @@ import glob
 #         }
 #     ]
 # }
+"""
 
 def read_subjects_from_yaml(file_path):
     with open(file_path, 'r') as file:
@@ -44,6 +48,7 @@ def read_subjects_from_yaml(file_path):
 def main():
     parser = argparse.ArgumentParser(description='Update dataset with segmentation files')
     parser.add_argument('-nnunet-dataset', type=str, help='Path to nnUNet dataset')
+    #todo: Download the openneuro dataset from the link to local and update it using the script
     parser.add_argument('-openneuro-dataset', type=str, help='Path to openneuro dataset')
     parser.add_argument('-corrected-subjects', type=str, help='Path to input file containing subjects')
     args = parser.parse_args()
@@ -76,23 +81,24 @@ def main():
         shutil.copyfile(source_path, destination_path)
         os.rename(destination_path, f'{openneuro_dataset}/derivatives/label/{subjects[i]}/func/{subjects[i]}_task-{task}_desc-spinalcordmask_manual.nii.gz')
 
-    # # Step 3: Update the JSON files linked to the dataset
-    # json_file_path = f'{openneuro_dataset}/dataset_description.json'
-    # with open(json_file_path, 'r') as file:
-    #     json_data = json.load(file)
-    # json_data['GeneratedBy'] = [
-    #     {
-    #         'Name': 'Manual',
-    #         'Author': 'Nawal Kinany'
-    #     },
-    #     {
-    #         'Name': 'Manually corrected after initial segmentation done by EPISeg model (https://github.com/sct-pipeline/fmri-segmentation/releases/tag/v0.2)',
-    #         'Author': 'Rohan Banerjee and Merve Kaptan',
-    #         'Date': str(datetime.datetime.now())
-    #     }
-    # ]
-    # with open(json_file_path, 'w') as file:
-    #     json.dump(json_data, file, indent=4)
+    # Step 3: Update the JSON files linked to the dataset
+    files_destination_json = glob.glob(f'{openneuro_dataset}/derivatives/label/{subjects[i]}/func/{subjects[i]}_task-*.json')
+    if files_destination:
+        json_file_path = files_destination_json[0]
+    else:
+        print(f"No destination json files found for subject {subjects[i]}")
+
+    with open(json_file_path, 'r') as outfile:
+        json_data = json.load(outfile)
+
+    # Assuming that the metadata already has the 'GeneratedBy' key
+    json_data['GeneratedBy'].append({'Name': 'Manual',
+                                     'Author': 'Rohan Banerjee and Merve Kaptan (Manually corrected after initial segmentation done by EPISeg model (https://github.com/sct-pipeline/fmri-segmentation/releases/tag/v0.2))',
+                                     'Date': time.strftime('%Y-%m-%d %H:%M:%S')})
+
+    with open(json_file_path, 'w') as file:
+        json.dump(json_data, file, indent=4)
+    print("JSON sidecar for {} was updated: {}".format(subjects[i], json_data))
 
 if __name__ == '__main__':
     main()
