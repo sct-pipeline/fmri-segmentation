@@ -8,7 +8,7 @@ import re
 import glob
 """
 Usage: python openneuro_data_update.py -nnunet-dataset <PATH_TO_nnUNet> -openneuro-dataset <PATH_TO_OPENNEURO-DATASET> -corrected-subjects <PATH_TO_MANUALLY_CORRECTED_yml_FILE>
-
+Example: python openneuro_data_update.py -nnunet-dataset /Users/rohanbanerjee/Documents/research/neuropoly/fMRI_sc_seg/datasets/nnUNet_raw/Dataset019_spinefmri -openneuro-dataset /Users/rohanbanerjee/Documents/research/neuropoly/fMRI_sc_seg/openneuro_test -corrected-subjects /Users/rohanbanerjee/Downloads/qc_fail_test.yml
 Author: Rohan Banerjee
 """
 
@@ -46,13 +46,13 @@ def main():
     for i, subject in enumerate(subjects):
         print(subjects[i])
         #todo: add a arguement to get the nnUnet dataset prefix, I am currently assuming it to be spinefmri (as per my dataset)
-        files_source = glob.glob(f'{nnunet_dataset}/labelsTr/spinefmri*{subjects[i]}_*.nii.gz')
+        files_source = glob.glob(f'{nnunet_dataset}/labelsTr/spinefmri*{subjects[i]}*.nii.gz')
         if files_source:
             source_path = files_source[0]
         else:
             print(f"No source files found for subject {subjects[i]}")
         #logic: remove the already existing segmentation file and copy the manually segmented one in place of it
-        files_destination = glob.glob(f'{openneuro_dataset}/derivatives/label/{subjects[i]}/func/{subjects[i]}_task-*.nii.gz')
+        files_destination = glob.glob(f'{openneuro_dataset}/derivatives/label/{subjects[i]}/func/{subjects[i]}_task*.nii.gz')
         if files_destination:
             destination_path = files_destination[0]
         else:
@@ -62,7 +62,7 @@ def main():
         shutil.copyfile(source_path, destination_path)
         os.rename(destination_path, f'{openneuro_dataset}/derivatives/label/{subjects[i]}/func/{subjects[i]}_task-{task}_desc-spinalcordmask.nii.gz')
 
-        files_destination_json = glob.glob(f'{openneuro_dataset}/derivatives/label/{subjects[i]}/func/{subjects[i]}_task-*.json')
+        files_destination_json = glob.glob(f'{openneuro_dataset}/derivatives/label/{subjects[i]}/func/{subjects[i]}_task*.json')
         if files_destination:
             json_file_path = files_destination_json[0]
         else:
