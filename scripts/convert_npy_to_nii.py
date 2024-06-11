@@ -2,6 +2,12 @@ import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
 
+'''
+WIP: This script is a work in progress and is not yet functional.
+To visualize nnUNet preprocessed data as NIFTI files
+'''
+
+
 def convert_npy_to_nii(npy_file_path, nii_file_path):
     # Load the .npy file
     data = np.load(npy_file_path)
