@@ -65,7 +65,7 @@ def hausdorff_distance_calc(seg1, seg2):
 all_dice = []
 
 def main(predictions_dir, ground_truth_dir, pred_suffix, output_file):
-    test_files = os.listdir(predictions_dir)
+    test_files = [file_name for file_name in os.listdir(predictions_dir) if file_name.endswith('.nii.gz')]
     test_files = [file_name for file_name in test_files if file_name != '.DS_Store']
     subjects = [file_name.split('_')[0] for file_name in test_files]
     
@@ -73,8 +73,18 @@ def main(predictions_dir, ground_truth_dir, pred_suffix, output_file):
     all_hausdorff = []
 
     for i in range(len(subjects)):
-        mask1 = os.path.join(predictions_dir, subjects[i],  "func", subjects[i] + pred_suffix + ".nii.gz")
-        mask2_files = glob.glob(os.path.join(ground_truth_dir, subjects[i], "func", subjects[i] + "*_seg-manual.nii.gz"))
+        
+        if args.data_type == "bids":
+            mask1 = os.path.join(predictions_dir, subjects[i], "func", subjects[i] + pred_suffix + ".nii.gz")
+            mask2_files = glob.glob(os.path.join(ground_truth_dir, subjects[i], "func", subjects[i] + "*_seg-manual.nii.gz"))
+        else:
+            mask1_files = glob.glob(os.path.join(predictions_dir, subjects[i] + "*" + pred_suffix + ".nii.gz"))
+            if mask1_files:
+                mask1 = mask1_files[0]
+            mask2_files = glob.glob(os.path.join(ground_truth_dir, subjects[i], "func", subjects[i] + "*_seg-manual.nii.gz"))
+
+        # mask1 = os.path.join(predictions_dir, subjects[i],  "func", subjects[i] + pred_suffix + ".nii.gz")
+        # mask2_files = glob.glob(os.path.join(ground_truth_dir, subjects[i], "func", subjects[i] + "*_seg-manual.nii.gz"))
         if mask2_files:
             mask2 = nib.load(mask2_files[0])
         else:
@@ -123,6 +133,7 @@ if __name__ == "__main__":
     parser.add_argument('--ground_truth_dir', type=str, required=True, help='Directory where the ground truth masks are stored')
     parser.add_argument('--output_file', type=str, required=True, help='Output file to save the Dice coefficients')
     parser.add_argument('--pred_suffix', type=str, required=True, help='Suffix of the prediction files')
+    parser.add_argument('--data_type', type=str, required=True, help='Suffix of the prediction files')
     args = parser.parse_args()
 
     main(args.predictions_dir, args.ground_truth_dir, args.pred_suffix, args.output_file)
