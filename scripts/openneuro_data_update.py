@@ -7,9 +7,16 @@ import argparse
 import re
 import glob
 """
+
 Usage: python openneuro_data_update.py -nnunet-dataset <PATH_TO_nnUNet> -openneuro-dataset <PATH_TO_OPENNEURO-DATASET> -corrected-subjects <PATH_TO_MANUALLY_CORRECTED_yml_FILE>
 Example: python openneuro_data_update.py -nnunet-dataset /Users/rohanbanerjee/Documents/research/neuropoly/fMRI_sc_seg/datasets/nnUNet_raw/Dataset019_spinefmri -openneuro-dataset /Users/rohanbanerjee/Documents/research/neuropoly/fMRI_sc_seg/openneuro_test -corrected-subjects /Users/rohanbanerjee/Downloads/qc_fail_test.yml
 Author: Rohan Banerjee
+
+[internal record keeping]
+Added dataset ids:
+017 --> Baseline training (round 1)
+018 --> iteration 1 (round 2)
+019 --> iteration 2 (round 3)
 """
 
 def read_subjects_from_yaml(file_path):
@@ -25,6 +32,16 @@ def read_subjects_from_yaml(file_path):
             subjects.append(subject)
 
     return subjects
+
+def pop_json_record(json_file, key):
+    with open(json_file, 'r') as outfile:
+        json_data = json.load(outfile)
+
+    if key in json_data:
+        json_data.pop(key)
+        with open(json_file, 'w') as file:
+            json.dump(json_data, file, indent=4)
+
 
 def main():
     parser = argparse.ArgumentParser(description='Update dataset with segmentation files')
@@ -71,10 +88,17 @@ def main():
         with open(json_file_path, 'r') as outfile:
             json_data = json.load(outfile)
 
+        pop_json_record(json_file_path, )
+
         # Assuming that the metadata already has the 'GeneratedBy' key
-        json_data['GeneratedBy'].append({'Name': 'Manual',
+        json_data['GeneratedBy'].append({'Name': 'Automatic',
                                         'Author': 'Rohan Banerjee and Merve Kaptan (Manually corrected after initial segmentation done by EPISeg model (https://github.com/sct-pipeline/fmri-segmentation/releases/tag/v0.2))',
-                                        'Date': time.strftime('%Y-%m-%d %H:%M:%S')})
+                                        'Date': time.strftime('%Y-%m-%d %H:%M:%S')
+                                        },
+                                        {'Name': 'Manual',
+                                        'Author': 'Rohan Banerjee and Merve Kaptan (Manually corrected after initial segmentation done by EPISeg model (https://github.com/sct-pipeline/fmri-segmentation/releases/tag/v0.2))',
+                                        'Date': time.strftime('%Y-%m-%d %H:%M:%S')
+                                        })
 
         with open(json_file_path, 'w') as file:
             json.dump(json_data, file, indent=4)
