@@ -7,6 +7,10 @@ import glob
 import statistics
 import csv
 import matplotlib.pyplot as plt
+from scipy import ndimage
+import warnings
+
+
 """
 This script calculates the Dice coefficient and the Hausdorff Distance between the predicted segmentation masks and the ground truth masks.
 Usage: python get_metrics.py --predictions_dir <PATH_TO_PREDS>    
@@ -37,24 +41,138 @@ Example dataset:
 
 
 Author: Rohan Banerjee
+Metrics adopted from the MetricsReloaded repository (https://github.com/Project-MONAI/MetricsReloaded), credits goes to the authors.
 """
 
-def dice_coefficient(seg1, seg2, smooth = 1):
-    intersection = np.sum(seg1[seg2==1])
-    union = np.sum(seg1) + np.sum(seg2)
-    if union == 0:
-        return 1.0
-    else:
-        return 2.0 * intersection / union
+# Below are the older implementations of dice score and hausdorff distance (& simpler). The results match with the current implementation. Using the metrics reloaded implementation for now to have stable implementations for future use.
+# def dice_coefficient(seg1, seg2, smooth = 1):
+#     intersection = np.sum(seg1[seg2==1])
+#     union = np.sum(seg1) + np.sum(seg2)
+#     if union == 0:
+#         return 1.0
+#     else:
+#         return 2.0 * intersection / union
     
-def hausdorff_distance_calc(seg1, seg2):
-    predicted_coords = np.argwhere(seg1)
-    truth_coords = np.argwhere(seg2)
+# def hausdorff_distance_calc(seg1, seg2):
+#     predicted_coords = np.argwhere(seg1)
+#     truth_coords = np.argwhere(seg2)
 
-    hausdorff_distance = max(directed_hausdorff(predicted_coords, truth_coords)[0],
-                             directed_hausdorff(truth_coords, predicted_coords)[0])
+#     hausdorff_distance = max(directed_hausdorff(predicted_coords, truth_coords)[0],
+#                              directed_hausdorff(truth_coords, predicted_coords)[0])
 
-    return hausdorff_distance
+#     return hausdorff_distance
+
+
+class CalculateMetrics:
+    def __init__(self, ref, pred):
+        self.ref = ref
+        self.pred = pred
+
+    def n_pos_ref(self):
+        """
+        Returns the number of elements in ref
+        """
+        return np.sum(self.ref)
+    
+    def n_pos_pred(self):
+        """
+        Returns the number of positive elements in the prediction
+        """
+        return np.sum(self.pred)
+    
+    def __tp_map(self):
+        """
+        This function calculates the true positive map
+
+        :return: TP map
+        """
+        ref_float = np.asarray(self.ref, dtype=np.float32)
+        pred_float = np.asarray(self.pred, dtype=np.float32)
+        return np.asarray((ref_float + pred_float) > 1.0, dtype=np.float32)
+
+    def tp(self):
+        """
+        Returns the number of true positive (TP) elements
+        """
+        return np.sum(self.__tp_map())
+    
+    def dsc(self):
+        """
+        Calculates the Dice Similarity Coefficient defined as
+
+        Lee R Dice. 1945. Measures of the amount of ecologic association between species. Ecology 26, 3 (1945), 297–302.
+
+        ..math::
+
+            DSC = \dfrac{2TP}{2TP+FP+FN}
+
+        This is also F:math:`{\\beta}` for :math:`{\\beta}`=1
+
+        """
+
+        numerator = 2 * self.tp()
+        denominator = self.n_pos_pred() + self.n_pos_ref()
+        if denominator == 0:
+            warnings.warn("Both Prediction and Reference are empty - set to 1 as correct solution even if not defined")
+            return 1
+        else:
+            return numerator / denominator
+
+
+class MorphologyOps(object):
+    """
+    Class that performs the morphological operations needed to get notably
+    connected component. To be used in the evaluation
+    """
+
+    def __init__(self, binary_img, connectivity):
+        self.binary_map = np.asarray(binary_img, dtype=np.int8)
+        self.connectivity = connectivity
+
+    def border_map(self):
+        """
+        Create the border map defined as the difference between the original image 
+        and its eroded version
+
+        :return: border
+        """
+        eroded = ndimage.binary_erosion(self.binary_map)
+        border = self.binary_map - eroded
+        return border
+
+    def border_map2(self):
+        """
+        Creates the border for a 3D image
+        :return:
+        """
+        west = ndimage.shift(self.binary_map, [-1, 0, 0], order=0)
+        east = ndimage.shift(self.binary_map, [1, 0, 0], order=0)
+        north = ndimage.shift(self.binary_map, [0, 1, 0], order=0)
+        south = ndimage.shift(self.binary_map, [0, -1, 0], order=0)
+        top = ndimage.shift(self.binary_map, [0, 0, 1], order=0)
+        bottom = ndimage.shift(self.binary_map, [0, 0, -1], order=0)
+        cumulative = west + east + north + south + top + bottom
+        border = ((cumulative < 6) * self.binary_map) == 1
+        return border
+
+    def foreground_component(self):
+        return ndimage.label(self.binary_map)
+
+    def list_foreground_component(self):
+        labels, _ = self.foreground_component()
+        list_ind_lab = []
+        list_volumes = []
+        list_com = []
+        list_values = np.unique(labels)
+        for f in list_values:
+            if f > 0:
+                tmp_lab = np.where(
+                    labels == f, np.ones_like(labels), np.zeros_like(labels)
+                )
+                list_ind_lab.append(tmp_lab)
+                list_volumes.append(np.sum(tmp_lab))
+                list_com.append(ndimage.center_of_mass(tmp_lab))
+        return list_ind_lab, list_volumes, list_com
 
 # def generate_plot():
     
@@ -96,25 +214,26 @@ def main(predictions_dir, ground_truth_dir, pred_suffix, output_file):
             data1 = mask1.get_fdata()
             data2 = mask2.get_fdata()
 
-            dice1_2 = dice_coefficient(data2, data1)
-            hausdorff1_2 = hausdorff_distance_calc(data1, data2)
-            # print("Subject: ", subjects[i])
-            # print("Dice: ", dice1_2)
-            # print("Hausdorff: ", hausdorff1_2)
-            all_dice.append(dice1_2*100)
-            all_hausdorff.append(hausdorff1_2)
+            # dice1_2 = dice_coefficient(data2, data1)
+            # hausdorff1_2 = hausdorff_distance_calc(data1, data2)
+
+            metrics = CalculateMetrics(data2, data1)
+            dice1_2 = metrics.dsc()
+            all_dice.append(dice1_2)
+
+            # all_hausdorff.append(hausdorff1_2)
         else:
             # handle the case where mask1 is not present
             dice1_2 = 0
-            hausdorff1_2 = 100
+            # hausdorff1_2 = 100
 
     mean_dice = statistics.mean(all_dice)
     std_dev_dice = statistics.stdev(all_dice)
-    mean_hausdorff = statistics.mean(all_hausdorff)
-    std_dev_hausdorff = statistics.stdev(all_hausdorff)
+    # mean_hausdorff = statistics.mean(all_hausdorff)
+    # std_dev_hausdorff = statistics.stdev(all_hausdorff)
 
     print("Dice: ", statistics.mean(all_dice), statistics.stdev(all_dice))
-    print("Hausdorff: ",statistics.mean(all_hausdorff), statistics.stdev(all_hausdorff))
+    # print("Hausdorff: ",statistics.mean(all_hausdorff), statistics.stdev(all_hausdorff))
 
     with open(output_file, 'a', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
@@ -122,7 +241,8 @@ def main(predictions_dir, ground_truth_dir, pred_suffix, output_file):
         #     writer.writerow(["Ground Truth Filename", "Prediction Filename", "Dice Score", "Hausdorff Distance"])
         # writer.writerow([subjects[i] + "_seg-manual.nii.gz", subjects[i] + pred_suffix + ".nii.gz", dice1_2, hausdorff1_2])
             writer.writerow(["Model", "Dice Score", "Hausdorff Distance"])
-        writer.writerow([pred_suffix, "{:.2f}".format(mean_dice) + "+-" + "{:.2f}".format(std_dev_dice), "{:.2f}".format(mean_hausdorff) + "+-" + "{:.2f}".format(std_dev_hausdorff)])
+        # writer.writerow([pred_suffix, "{:.2f}".format(mean_dice) + "+-" + "{:.2f}".format(std_dev_dice), "{:.2f}".format(mean_hausdorff) + "+-" + "{:.2f}".format(std_dev_hausdorff)])
+        writer.writerow([pred_suffix, "{:.2f}".format(mean_dice) + "+-" + "{:.2f}".format(std_dev_dice)])
 
     # print(all_dice)
     # print(all_hausdorff)
