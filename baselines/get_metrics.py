@@ -117,12 +117,14 @@ class MorphologyOps(object):
                 list_com.append(ndimage.center_of_mass(tmp_lab))
         return list_ind_lab, list_volumes, list_com
     
-    
 
-class CalculateMetrics:
-    def __init__(self, ref, pred):
-        self.ref = ref
-        self.pred = pred
+
+class CalculateMetrics(object):
+    def __init__(self, ref, pred, connectivity_type=1, pixdim=None):
+        self.ref=ref
+        self.pred=pred
+        self.connectivity=connectivity_type
+        self.pixdim=pixdim
 
     def n_pos_ref(self):
         """
@@ -173,8 +175,98 @@ class CalculateMetrics:
             return 1
         else:
             return numerator / denominator
+        
+    def border_distance(self):
+        """
+        This functions determines the map of distance from the borders of the
+        prediction and the reference and the border maps themselves
 
-# def generate_plot():
+        :return: distance_border_ref, distance_border_pred, border_ref,
+        border_pred
+        """
+        border_ref = MorphologyOps(self.ref, self.connectivity).border_map()
+        border_pred = MorphologyOps(self.pred, self.connectivity).border_map()
+        oppose_ref = 1 - self.ref
+        oppose_pred = 1 - self.pred
+        distance_ref = ndimage.distance_transform_edt(
+            1 - border_ref, sampling=self.pixdim
+        )
+        distance_pred = ndimage.distance_transform_edt(
+            1 - border_pred, sampling=self.pixdim
+        )
+        distance_border_pred = border_ref * distance_pred
+        distance_border_ref = border_pred * distance_ref
+
+        return distance_border_ref, distance_border_pred, border_ref, border_pred
+    
+    def measured_distance(self):
+        """
+        This functions calculates the average symmetric distance and the
+        hausdorff distance between a prediction and a reference image
+
+        :return: hausdorff distance and average symmetric distance, hausdorff distance at perc
+        and masd
+        """
+            
+        perc = 95
+        if np.sum(self.pred + self.ref) == 0:
+            return 0, 0, 0, 0
+        (
+            ref_border_dist,
+            pred_border_dist,
+            ref_border,
+            pred_border,
+        ) = self.border_distance()
+        #print(ref_border_dist)
+        average_distance = (np.sum(ref_border_dist) + np.sum(pred_border_dist)) / (
+            np.sum(pred_border + ref_border)
+        )
+        masd = 0.5 * (
+            np.sum(ref_border_dist) / np.sum(pred_border)
+            + np.sum(pred_border_dist) / np.sum(ref_border)
+        )
+
+        hausdorff_distance = np.max([np.max(ref_border_dist), np.max(pred_border_dist)])
+
+        hausdorff_distance_perc = np.max(
+            [
+                np.percentile(ref_border_dist[pred_border > 0], q=perc),
+                np.percentile(pred_border_dist[ref_border > 0], q=perc),
+            ]
+        )
+
+        return hausdorff_distance, average_distance, hausdorff_distance_perc, masd
+    
+
+    def measured_hausdorff_distance_perc(self):
+        """
+        This function returns the xth percentile hausdorff distance
+
+        Daniel P Huttenlocher, Gregory A. Klanderman, and William J Rucklidge. 1993. Comparing images using the Hausdorff
+        distance. IEEE Transactions on pattern analysis and machine intelligence 15, 9 (1993), 850–863.
+
+        :return: hausdorff_distance_perc
+        """
+        return self.measured_distance()[2]
+
+
+
+def bids_processing(predictions_dir):
+    subjects = []
+    for root, dirs, files in os.walk(predictions_dir):
+        for file in files:
+            if file.endswith(".nii.gz"):
+                subjects.append(file.split('_')[0])
+    
+    return list(set(subjects))
+
+
+def nnunet_processing(predictions_dir):
+    test_files = [file_name for file_name in os.listdir(predictions_dir) if file_name.endswith('.nii.gz')]
+    test_files = [file_name for file_name in test_files if file_name != '.DS_Store']
+    subjects = [file_name.split('_')[0] for file_name in test_files]
+    
+    return subjects
     
 
 
@@ -182,31 +274,62 @@ class CalculateMetrics:
 
 all_dice = []
 
-def main(predictions_dir, ground_truth_dir, pred_suffix, output_file):
-    test_files = [file_name for file_name in os.listdir(predictions_dir) if file_name.endswith('.nii.gz')]
-    test_files = [file_name for file_name in test_files if file_name != '.DS_Store']
-    subjects = [file_name.split('_')[0] for file_name in test_files]
+def main(predictions_dir, ground_truth_dir, output_file, pred_suffix, data_type):
+    # test_files = [file_name for file_name in os.listdir(predictions_dir) if file_name.endswith('.nii.gz')]
+    # test_files = [file_name for file_name in test_files if file_name != '.DS_Store']
+    # subjects = [file_name.split('_')[0] for file_name in test_files]
+
+    if data_type == "bids":
+        subjects = bids_processing(predictions_dir)
+    else:
+        subjects = nnunet_processing(predictions_dir)
+        print(subjects)
     
     all_dice = []
     all_hausdorff = []
 
     for i in range(len(subjects)):
         
-        if args.data_type == "bids":
-            mask1 = os.path.join(predictions_dir, subjects[i], "func", subjects[i] + pred_suffix + ".nii.gz")
-            mask2_files = glob.glob(os.path.join(ground_truth_dir, subjects[i], "func", subjects[i] + "*_seg-manual.nii.gz"))
-        else:
-            mask1_files = glob.glob(os.path.join(predictions_dir, subjects[i] + "*" + pred_suffix + ".nii.gz"))
+        if data_type == "bids":
+            mask1_files = glob.glob(os.path.join(predictions_dir, subjects[i], "func", subjects[i] + pred_suffix + ".nii.gz"))
             if mask1_files:
                 mask1 = mask1_files[0]
+                print(f"mask1 found for subject {subjects[i]}")
+            else:
+                print(f"No mask1 found for subject {subjects[i]}")
+                continue
+
             mask2_files = glob.glob(os.path.join(ground_truth_dir, subjects[i], "func", subjects[i] + "*_seg-manual.nii.gz"))
+            if mask2_files:
+                mask2 = nib.load(mask2_files[0])
+                print(f"mask2 found for subject {subjects[i]}")
+            else:
+                print(f"No mask2 found for subject {subjects[i]}")
+                continue
+        else:
+            mask1_files = glob.glob(os.path.join(predictions_dir, subjects[i] + "*" + pred_suffix + ".nii.gz"))
+            print(os.path.join(predictions_dir, subjects[i] +  "*" + pred_suffix + ".nii.gz"))
+            if mask1_files:
+                mask1 = mask1_files[0]
+                print(f"mask1 found for subject {subjects[i]}")
+            else:
+                print(f"No mask1 found for subject {subjects[i]}")
+                continue
+
+            mask2_files = glob.glob(os.path.join(ground_truth_dir, subjects[i], "func", subjects[i] + "*_seg-manual.nii.gz"))
+            if mask2_files:
+                mask2 = nib.load(mask2_files[0])
+                print(f"mask2 found for subject {subjects[i]}")
+            else:
+                print(f"No mask2 found for subject {subjects[i]}")
+                continue
 
         # mask1 = os.path.join(predictions_dir, subjects[i],  "func", subjects[i] + pred_suffix + ".nii.gz")
         # mask2_files = glob.glob(os.path.join(ground_truth_dir, subjects[i], "func", subjects[i] + "*_seg-manual.nii.gz"))
         if mask2_files:
             mask2 = nib.load(mask2_files[0])
         else:
-            print(f"No file found for subject {subjects[i]}")
+            print(f"No mask1 found for subject {subjects[i]}")
             continue
         
         if os.path.exists(mask1) and os.path.getsize(mask1) > 0:
@@ -220,20 +343,21 @@ def main(predictions_dir, ground_truth_dir, pred_suffix, output_file):
             metrics = CalculateMetrics(data2, data1)
             dice1_2 = metrics.dsc()
             all_dice.append(dice1_2)
+            hausdorff1_2 = metrics.measured_hausdorff_distance_perc()
+            all_hausdorff.append(hausdorff1_2)
 
-            # all_hausdorff.append(hausdorff1_2)
         else:
             # handle the case where mask1 is not present
             dice1_2 = 0
-            # hausdorff1_2 = 100
+            hausdorff1_2 = 100
 
     mean_dice = statistics.mean(all_dice)
     std_dev_dice = statistics.stdev(all_dice)
-    # mean_hausdorff = statistics.mean(all_hausdorff)
-    # std_dev_hausdorff = statistics.stdev(all_hausdorff)
+    mean_hausdorff = statistics.mean(all_hausdorff)
+    std_dev_hausdorff = statistics.stdev(all_hausdorff)
 
     print("Dice: ", statistics.mean(all_dice), statistics.stdev(all_dice))
-    # print("Hausdorff: ",statistics.mean(all_hausdorff), statistics.stdev(all_hausdorff))
+    print("Hausdorff: ",statistics.mean(all_hausdorff), statistics.stdev(all_hausdorff))
 
     with open(output_file, 'a', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
@@ -241,14 +365,13 @@ def main(predictions_dir, ground_truth_dir, pred_suffix, output_file):
         #     writer.writerow(["Ground Truth Filename", "Prediction Filename", "Dice Score", "Hausdorff Distance"])
         # writer.writerow([subjects[i] + "_seg-manual.nii.gz", subjects[i] + pred_suffix + ".nii.gz", dice1_2, hausdorff1_2])
             writer.writerow(["Model", "Dice Score", "Hausdorff Distance"])
-        # writer.writerow([pred_suffix, "{:.2f}".format(mean_dice) + "+-" + "{:.2f}".format(std_dev_dice), "{:.2f}".format(mean_hausdorff) + "+-" + "{:.2f}".format(std_dev_hausdorff)])
-        writer.writerow([pred_suffix, "{:.2f}".format(mean_dice) + "+-" + "{:.2f}".format(std_dev_dice)])
+        writer.writerow([pred_suffix, "{:.2f}".format(mean_dice) + "+-" + "{:.2f}".format(std_dev_dice), "{:.2f}".format(mean_hausdorff) + "+-" + "{:.2f}".format(std_dev_hausdorff)])
 
-    # print(all_dice)
-    # print(all_hausdorff)
+    print(all_dice)
+    print(all_hausdorff)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Calculate Dice Coefficients.')
+    parser = argparse.ArgumentParser(description='Calculate metrics for your data')
     parser.add_argument('--predictions_dir', type=str, required=True, help='Directory where the predictions are stored')
     parser.add_argument('--ground_truth_dir', type=str, required=True, help='Directory where the ground truth masks are stored')
     parser.add_argument('--output_file', type=str, required=True, help='Output file to save the Dice coefficients')
@@ -256,4 +379,4 @@ if __name__ == "__main__":
     parser.add_argument('--data_type', type=str, required=True, help='Suffix of the prediction files')
     args = parser.parse_args()
 
-    main(args.predictions_dir, args.ground_truth_dir, args.pred_suffix, args.output_file)
+    main(args.predictions_dir, args.ground_truth_dir, args.output_file, args.pred_suffix, args.data_type)
