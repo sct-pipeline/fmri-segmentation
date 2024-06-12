@@ -62,6 +62,62 @@ Metrics adopted from the MetricsReloaded repository (https://github.com/Project-
 
 #     return hausdorff_distance
 
+class MorphologyOps(object):
+    """
+    Class that performs the morphological operations needed to get notably
+    connected component. To be used in the evaluation
+    """
+
+    def __init__(self, binary_img, connectivity):
+        self.binary_map = np.asarray(binary_img, dtype=np.int8)
+        self.connectivity = connectivity
+
+    def border_map(self):
+        """
+        Create the border map defined as the difference between the original image 
+        and its eroded version
+
+        :return: border
+        """
+        eroded = ndimage.binary_erosion(self.binary_map)
+        border = self.binary_map - eroded
+        return border
+
+    def border_map2(self):
+        """
+        Creates the border for a 3D image
+        :return:
+        """
+        west = ndimage.shift(self.binary_map, [-1, 0, 0], order=0)
+        east = ndimage.shift(self.binary_map, [1, 0, 0], order=0)
+        north = ndimage.shift(self.binary_map, [0, 1, 0], order=0)
+        south = ndimage.shift(self.binary_map, [0, -1, 0], order=0)
+        top = ndimage.shift(self.binary_map, [0, 0, 1], order=0)
+        bottom = ndimage.shift(self.binary_map, [0, 0, -1], order=0)
+        cumulative = west + east + north + south + top + bottom
+        border = ((cumulative < 6) * self.binary_map) == 1
+        return border
+
+    def foreground_component(self):
+        return ndimage.label(self.binary_map)
+
+    def list_foreground_component(self):
+        labels, _ = self.foreground_component()
+        list_ind_lab = []
+        list_volumes = []
+        list_com = []
+        list_values = np.unique(labels)
+        for f in list_values:
+            if f > 0:
+                tmp_lab = np.where(
+                    labels == f, np.ones_like(labels), np.zeros_like(labels)
+                )
+                list_ind_lab.append(tmp_lab)
+                list_volumes.append(np.sum(tmp_lab))
+                list_com.append(ndimage.center_of_mass(tmp_lab))
+        return list_ind_lab, list_volumes, list_com
+    
+    
 
 class CalculateMetrics:
     def __init__(self, ref, pred):
@@ -117,62 +173,6 @@ class CalculateMetrics:
             return 1
         else:
             return numerator / denominator
-
-
-class MorphologyOps(object):
-    """
-    Class that performs the morphological operations needed to get notably
-    connected component. To be used in the evaluation
-    """
-
-    def __init__(self, binary_img, connectivity):
-        self.binary_map = np.asarray(binary_img, dtype=np.int8)
-        self.connectivity = connectivity
-
-    def border_map(self):
-        """
-        Create the border map defined as the difference between the original image 
-        and its eroded version
-
-        :return: border
-        """
-        eroded = ndimage.binary_erosion(self.binary_map)
-        border = self.binary_map - eroded
-        return border
-
-    def border_map2(self):
-        """
-        Creates the border for a 3D image
-        :return:
-        """
-        west = ndimage.shift(self.binary_map, [-1, 0, 0], order=0)
-        east = ndimage.shift(self.binary_map, [1, 0, 0], order=0)
-        north = ndimage.shift(self.binary_map, [0, 1, 0], order=0)
-        south = ndimage.shift(self.binary_map, [0, -1, 0], order=0)
-        top = ndimage.shift(self.binary_map, [0, 0, 1], order=0)
-        bottom = ndimage.shift(self.binary_map, [0, 0, -1], order=0)
-        cumulative = west + east + north + south + top + bottom
-        border = ((cumulative < 6) * self.binary_map) == 1
-        return border
-
-    def foreground_component(self):
-        return ndimage.label(self.binary_map)
-
-    def list_foreground_component(self):
-        labels, _ = self.foreground_component()
-        list_ind_lab = []
-        list_volumes = []
-        list_com = []
-        list_values = np.unique(labels)
-        for f in list_values:
-            if f > 0:
-                tmp_lab = np.where(
-                    labels == f, np.ones_like(labels), np.zeros_like(labels)
-                )
-                list_ind_lab.append(tmp_lab)
-                list_volumes.append(np.sum(tmp_lab))
-                list_com.append(ndimage.center_of_mass(tmp_lab))
-        return list_ind_lab, list_volumes, list_com
 
 # def generate_plot():
     
