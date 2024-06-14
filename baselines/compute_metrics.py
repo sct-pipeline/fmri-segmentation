@@ -308,7 +308,6 @@ def main(predictions_dir, ground_truth_dir, output_file, pred_suffix, data_type)
                 continue
         else:
             mask1_files = glob.glob(os.path.join(predictions_dir, subjects[i] + "*" + pred_suffix + ".nii.gz"))
-            print(os.path.join(predictions_dir, subjects[i] +  "*" + pred_suffix + ".nii.gz"))
             if mask1_files:
                 mask1 = mask1_files[0]
                 print(f"mask1 found for subject {subjects[i]}")
@@ -317,6 +316,7 @@ def main(predictions_dir, ground_truth_dir, output_file, pred_suffix, data_type)
                 continue
 
             mask2_files = glob.glob(os.path.join(ground_truth_dir, subjects[i], "func", subjects[i] + "*_seg-manual.nii.gz"))
+            # print(os.path.join(ground_truth_dir, subjects[i], "func", subjects[i] + "*_spinalcordmask.nii.gz"))
             if mask2_files:
                 mask2 = nib.load(mask2_files[0])
                 print(f"mask2 found for subject {subjects[i]}")
@@ -364,7 +364,10 @@ def main(predictions_dir, ground_truth_dir, output_file, pred_suffix, data_type)
         if csvfile.tell() == 0:
         #     writer.writerow(["Ground Truth Filename", "Prediction Filename", "Dice Score", "Hausdorff Distance"])
         # writer.writerow([subjects[i] + "_seg-manual.nii.gz", subjects[i] + pred_suffix + ".nii.gz", dice1_2, hausdorff1_2])
-            writer.writerow(["Model", "Dice Score", "Hausdorff Distance"])
+            writer.writerow(["Subject", "Dice Score (Mean ± Std Dev)", "Hausdorff Distance (Mean ± Std Dev)"])
+            for i in range(len(subjects)):
+                writer.writerow([subjects[i], "{:.2f}".format(all_dice[i]) + "+-" + "{:.2f}".format(std_dev_dice), "{:.2f}".format(all_hausdorff[i]) + "+-" + "{:.2f}".format(std_dev_hausdorff)])
+            writer.writerow(["Mean", "{:.2f}".format(mean_dice) + "+-" + "{:.2f}".format(std_dev_dice), "{:.2f}".format(mean_hausdorff) + "+-" + "{:.2f}".format(std_dev_hausdorff)])
         writer.writerow([pred_suffix, "{:.2f}".format(mean_dice) + "+-" + "{:.2f}".format(std_dev_dice), "{:.2f}".format(mean_hausdorff) + "+-" + "{:.2f}".format(std_dev_hausdorff)])
 
     print(all_dice)
