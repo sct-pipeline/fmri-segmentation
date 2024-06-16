@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
-csv_files = ['/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/datasets/held-out_test_common_bids_resunet/results_resunet.csv', '/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/datasets/held-out_test_common_bids_all_manual_data/results_all_manual.csv', '/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/datasets/held-out_test_common_bids/results_contrast_agnostic.csv']
+csv_files = ['/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/datasets/held-out_test_common_bids_all_manual_data/results_all_manual.csv', '/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/datasets/held-out_test_common_bids_resunet/results_resunet.csv', '/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/datasets/held-out_test_common_bids_all_manual_data/results_all_manual.csv', '/home/GRAMES.POLYMTL.CA/robana/duke/temp/rohan/fmri_sc_seg/datasets/held-out_test_common_bids/results_contrast_agnostic.csv']
 
 dice_scores = []
 hausdorff_distances = []

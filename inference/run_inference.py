@@ -188,7 +188,7 @@ def main():
     start = time.time()
     # instantiate the nnUNetPredictor
     predictor = nnUNetPredictor(
-        tile_step_size=0.5,
+        tile_step_size=0.2,
         use_gaussian=True,
         use_mirroring=True,
         perform_everything_on_gpu=True if args.use_gpu else False,
