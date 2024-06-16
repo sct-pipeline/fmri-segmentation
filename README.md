@@ -58,7 +58,7 @@ export nnUNet_results="${HOME}/nnUNet_results"
 ```
 
 
-4. Download the dataset from [here](https://drive.google.com/drive/folders/14rxPz_mWV1AOSULBFFU7A5IT9zX5PvcI?usp=sharing) (soon to be open-sourced on Openneuro)
+4. Download the dataset from [OpenNeuro](https://openneuro.org/datasets/ds005143)
 
 5. Uzip the data and run the following to convert into nnUNetv2 dataset format:
 ```
