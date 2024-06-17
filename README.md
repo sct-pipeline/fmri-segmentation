@@ -1,5 +1,6 @@
 # Automatic Spinal Cord Segmentation on fMRI EPI Data
 Repository for the project containing training information, model weights and inference instructions. The code is based on the [nnUNetv2 framework](https://github.com/MIC-DKFZ/nnUNet).
+Dataset used for this project is open-sourced! Find it [here](https://openneuro.org/datasets/ds005143/versions/1.2.0) on Openneuro
 
 
 To share data for the project, please read wiki [here](https://github.com/sct-pipeline/fmri-segmentation/wiki/Data-contribution-details)!
