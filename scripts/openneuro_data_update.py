@@ -88,16 +88,14 @@ def main():
         with open(json_file_path, 'r') as outfile:
             json_data = json.load(outfile)
 
-        pop_json_record(json_file_path, )
-
         # Assuming that the metadata already has the 'GeneratedBy' key
         json_data['GeneratedBy'].append({'Name': 'Automatic',
-                                        'Author': 'Rohan Banerjee and Merve Kaptan (Manually corrected after initial segmentation done by EPISeg model (https://github.com/sct-pipeline/fmri-segmentation/releases/tag/v0.2))',
-                                        'Date': time.strftime('%Y-%m-%d %H:%M:%S')
-                                        },
-                                        {'Name': 'Manual',
-                                        'Author': 'Rohan Banerjee and Merve Kaptan (Manually corrected after initial segmentation done by EPISeg model (https://github.com/sct-pipeline/fmri-segmentation/releases/tag/v0.2))',
-                                        'Date': time.strftime('%Y-%m-%d %H:%M:%S')
+                                        'Author': 'EPISeg model (https://github.com/sct-pipeline/fmri-segmentation/releases/tag/v0.2))',
+                                        'Date': ''
+                                        })
+        json_data['GeneratedBy'].append({'Name': 'Manual',
+                                        'Author': 'Rohan Banerjee and Merve Kaptan',
+                                        'Date': ''
                                         })
 
         with open(json_file_path, 'w') as file:
