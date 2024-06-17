@@ -91,11 +91,12 @@ def main():
         # Assuming that the metadata already has the 'GeneratedBy' key
         json_data['GeneratedBy'].append({'Name': 'Automatic',
                                         'Author': 'EPISeg model (https://github.com/sct-pipeline/fmri-segmentation/releases/tag/v0.2))',
-                                        'Date': ''
+                                        'Version': 'v0.2',
+                                        'Date': '2024-04-19'
                                         })
         json_data['GeneratedBy'].append({'Name': 'Manual',
                                         'Author': 'Rohan Banerjee and Merve Kaptan',
-                                        'Date': ''
+                                        'Date': '2024-04-26'
                                         })
 
         with open(json_file_path, 'w') as file:
