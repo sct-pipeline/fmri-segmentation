@@ -178,9 +178,6 @@ def main():
             path_out.append(path_pred)
         print(path_out)
 
-
-
-
     # uses all the folds available in the model folder by default
     folds_avail = [f.split('_')[-1] for f in os.listdir(args.path_model) if f.startswith('fold_')]
 
