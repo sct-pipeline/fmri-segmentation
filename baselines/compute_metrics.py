@@ -9,7 +9,7 @@ import csv
 import matplotlib.pyplot as plt
 from scipy import ndimage
 import warnings
-
+from medpy.metric import binary
 
 """
 This script calculates the Dice coefficient and the Hausdorff Distance between the predicted segmentation masks and the ground truth masks.
@@ -341,9 +341,11 @@ def main(predictions_dir, ground_truth_dir, output_file, pred_suffix, data_type)
             # hausdorff1_2 = hausdorff_distance_calc(data1, data2)
 
             metrics = CalculateMetrics(data2, data1)
-            dice1_2 = metrics.dsc()
+            # dice1_2 = metrics.dsc()
+            dice1_2 = binary.dc(data1, data2)
             all_dice.append(dice1_2)
             hausdorff1_2 = metrics.measured_hausdorff_distance_perc()
+            # hausdorff1_2 = binary.hd95(data1, data2)
             all_hausdorff.append(hausdorff1_2)
 
         else:
