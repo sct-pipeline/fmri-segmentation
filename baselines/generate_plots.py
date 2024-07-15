@@ -1,6 +1,6 @@
 """
 Generate plots for the results of the models
-Note: Very initial script, WIP
+Note: Very initial script, WIP (NOT TO BE REVIEWED)
 
 To-do:
 1. Write classes
