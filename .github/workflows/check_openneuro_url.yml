@@ -1,0 +1,22 @@
+name: Check OpenNeuro URL
+
+on:
+  schedule:
+    - cron: '0 9 * * *'  # Every day at 09:00 UTC
+  workflow_dispatch:      # Allow manual triggering
+
+jobs:
+  check-url:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check OpenNeuro dataset link
+        run: |
+          URL="https://openneuro.org/datasets/ds005143/versions/1.3.0"
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" "$URL")
+          echo "Status code: $STATUS"
+          if [ "$STATUS" -ne 200 ]; then
+            echo "::error ::OpenNeuro link is not accessible (status: $STATUS)"
+            exit 1
+          else
+            echo "✅ OpenNeuro link is working."
+          fi
