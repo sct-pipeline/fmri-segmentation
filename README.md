@@ -2,6 +2,12 @@
 Repository for the project containing training information, model weights and inference instructions. The code is based on the [nnUNetv2 framework](https://github.com/MIC-DKFZ/nnUNet).
 Dataset used for this project is open-sourced! Find it [here](https://openneuro.org/datasets/ds005143/versions/1.2.1) on Openneuro.
 
+> [!Important]  
+> If you use this model, please cite:
+> 
+> Banerjee R, Kaptan M, Tinnermann A, Khatibi A, Dabbagh A, Büchel C, Kündig CW, Law CSW, Pfyffer D, Lythgoe DJ, Tsivaka D, Van De Ville D, Eippert F, Muhammad F, Glover GH, David G, Haynes G, Haaker J, Brooks JCW, Finsterbusch J, Martucci KT, Hemmerling KJ, Mobarak-Abadi M, Hoggarth MA, Howard MA, Bright MG, Kinany N, Kowalczyk OS, Freund P, Barry RL, Mackey S, Vahdat S, Schading S, McMahon SB, Parish T, Marchand-Pauvert V, Chen Y, Smith ZA, Weber KA II, De Leener B, Cohen-Adad J. EPISeg: Automated segmentation of the spinal cord on echo planar images using open-access multi-center data. Imaging Neurosci (Camb) [Internet]. 2025 Jul 21 [cited 2025 Sep 2]; Available from: https://direct.mit.edu/imag/article/doi/10.1162/IMAG.a.98/131869/EPISeg-Automated-segmentation-of-the-spinal-cord
+  
+
 
 To share data for the project, please read wiki [here](https://github.com/sct-pipeline/fmri-segmentation/wiki/Data-contribution-details)!
 
