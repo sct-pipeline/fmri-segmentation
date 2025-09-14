@@ -9,13 +9,15 @@ Dataset used for this project is open-sourced! Find it [here](https://openneuro.
   
 
 
-To share data for the project, please read wiki [here](https://github.com/sct-pipeline/fmri-segmentation/wiki/Data-contribution-details)!
+To share data for the project, please read wiki [here](https://github.com/sct-pipeline/fmri-segmentation/wiki/Data-contribution-details)! 
+
+Dataset: https://openneuro.org/datasets/ds005143/versions/1.3.1 
 
 #### Link to latest segmentation model weights: [here](https://github.com/sct-pipeline/fmri-segmentation/releases/tag/v0.2)
 
 ## Getting started
 
-- [Spinal Cord Toolbox (SCT)](https://spinalcordtoolbox.com/user_section/installation.html)
+- [Spinal Cord Toolbox (>=v7.1)](https://spinalcordtoolbox.com/user_section/installation.html)
 - [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) 
 - Python
 - [nnUNetv2](https://github.com/MIC-DKFZ/nnUNet)
@@ -23,10 +25,16 @@ To share data for the project, please read wiki [here](https://github.com/sct-pi
 
 ## To run inference on your data, follow the below steps:
 ```
-sct_deepseg -install-task seg_sc_epi
-sct_deepseg -task seg_sc_epi -i <IMAGE_PATH> -c bold -o <OUTPUT_PATH>
+usage: sct_deepseg sc_epi [-i <file> [<file> ...]] [-o <str>] [-install]
+                          [-custom-url CUSTOM_URL [CUSTOM_URL ...]]
+                          [-largest {0,1}] [-fill-holes {0,1}]
+                          [-remove-small REMOVE_SMALL [REMOVE_SMALL ...]]
+                          [-qc <folder>] [-qc-dataset <str>] [-qc-subject <str>]
+                          [-qc-plane <str>] [-qc-seg <file>] [-h] [-v <int>]
+                          [-profile-time [<file>]] [-trace-memory [<folder>]]
+                          [-r {0,1}]
 ```
-
+Project url: https://spinalcordtoolbox.com/stable/user_section/command-line/deepseg/sc_epi.html
 
 ## To reproduce the model training:
 
