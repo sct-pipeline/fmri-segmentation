@@ -61,7 +61,7 @@ conda create -n fmri_seg python=3.9
 2. Activate the environment with the following command:
 ```
 conda activate fmri_seg
-pip install -r scripts/run_nnunet_inference_requirements.txt
+pip install -r inference/requirements.txt
 ```
 
 3. Install nnUNetv2 from the [nnUNetv2](https://github.com/MIC-DKFZ/nnUNet):
