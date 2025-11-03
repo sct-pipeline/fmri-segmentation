@@ -74,6 +74,12 @@ export nnUNet_results="${HOME}/nnUNet_results"
 
 
 4. Download the dataset from [OpenNeuro]([https://openneuro.org/datasets/ds005143](https://openneuro.org/datasets/ds005143/versions/1.2.0))
+```
+pip install datalad 
+git clone https://github.com/OpenNeuroDatasets/ds005143.git
+cd ds005143
+datalad get .
+```
 
 5. Uzip the data and run the following to convert into nnUNetv2 dataset format:
 ```
