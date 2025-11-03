@@ -61,7 +61,7 @@ conda create -n fmri_seg python=3.9
 2. Activate the environment with the following command:
 ```
 conda activate fmri_seg
-pip install -r scripts/run_nnunet_inference_requirements.txt
+pip install -r inference/requirements.txt
 ```
 
 3. Install nnUNetv2 from the [nnUNetv2](https://github.com/MIC-DKFZ/nnUNet):
@@ -74,6 +74,12 @@ export nnUNet_results="${HOME}/nnUNet_results"
 
 
 4. Download the dataset from [OpenNeuro]([https://openneuro.org/datasets/ds005143](https://openneuro.org/datasets/ds005143/versions/1.2.0))
+```
+pip install datalad 
+git clone https://github.com/OpenNeuroDatasets/ds005143.git
+cd ds005143
+datalad get .
+```
 
 5. Uzip the data and run the following to convert into nnUNetv2 dataset format:
 ```
